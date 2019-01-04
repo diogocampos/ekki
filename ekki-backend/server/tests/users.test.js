@@ -39,5 +39,10 @@ describe('POST /users', () => {
         tokens: [stringMatching(JSON_WEB_TOKEN)],
       })
     })
+
+    it('sets the initial balance to zero', async () => {
+      const userDoc = await User.findOne({ username: user.username })
+      expect(userDoc).toMatchObject({ balance: 0 })
+    })
   })
 })

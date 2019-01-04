@@ -6,6 +6,10 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
   },
+  balance: {
+    type: Number,
+    default: 0,
+  },
   password: {
     type: String,
   },
