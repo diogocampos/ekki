@@ -28,7 +28,7 @@ describe('POST /users', () => {
     })
 
     it('creates new user with the given username', () => {
-      expect(userDoc).toMatchObject({ username: user.username })
+      expect(userDoc).toMatchObject({ username: user.username.toLowerCase() })
     })
 
     it('saves a salted hash of the given password', () => {
@@ -49,7 +49,7 @@ describe('POST /users', () => {
 
     it('responds with minimal user info in body', () => {
       expect(res.body.user).toEqual({
-        username: user.username,
+        username: user.username.toLowerCase(),
         balance: 0,
       })
     })
@@ -70,12 +70,17 @@ describe('POST /users', () => {
       const invalidUsernames = [undefined, '', ' ', '!@#$', {}, [], null]
       await Promise.all(
         invalidUsernames.map(async username => {
-          const res = await req({
-            user: { username, password: 'password' },
-          }).expect(400)
+          const user = { username, password: 'password' }
+          const res = await req({ user }).expect(400)
           expect(res.body).toEqual({ errors: { username: any(String) } })
         })
       )
+    })
+
+    it('checks if username already exists', async () => {
+      const user = fixtures.users[0]
+      const res = await req({ user }).expect(400)
+      expect(res.body).toEqual({ errors: { username: any(String) } })
     })
   })
 })

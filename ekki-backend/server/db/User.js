@@ -1,14 +1,17 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 
-const VALID_USERNAME = /^[a-z\d]+([_.][a-z\d]+)*$/i
+const VALID_USERNAME = /^[a-z\d]+([_.][a-z\d]+)*$/
 
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Username is required'],
     trim: true,
+    lowercase: true,
+    unique: true,
     match: [VALID_USERNAME, 'Username is invalid'],
   },
   balance: {
@@ -25,6 +28,8 @@ const UserSchema = new mongoose.Schema({
     },
   ],
 })
+
+UserSchema.plugin(uniqueValidator, { message: 'Username already exists' })
 
 UserSchema.methods.generateAuthToken = async function() {
   const user = this
