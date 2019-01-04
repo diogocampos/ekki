@@ -3,7 +3,7 @@ const express = require('express')
 require('./config')
 require('./db/connect')
 
-const users = require('./routers/users')
+const users = require('./routes/users')
 const { wrap, ...middleware } = require('./middleware')
 
 const app = express()
