@@ -82,5 +82,11 @@ describe('POST /users', () => {
       const res = await req({ user }).expect(400)
       expect(res.body).toEqual({ errors: { username: any(String) } })
     })
+
+    it('checks if password is too short', async () => {
+      const user = { username: 'username', password: '1234' }
+      const res = await req({ user }).expect(400)
+      expect(res.body).toEqual({ errors: { password: any(String) } })
+    })
   })
 })
