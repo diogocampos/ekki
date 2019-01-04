@@ -1,6 +1,8 @@
 const express = require('express')
 
-const { internalServerError, wrap } = require('./middleware')
+const { internalServerError, notFound, wrap } = require('./middleware')
+
+require('./config')
 
 const app = express()
 
@@ -11,6 +13,7 @@ if (process.env.NODE_ENV === 'test') {
   app.get('/error/reject', wrap(async () => { throw false })) //prettier-ignore
 }
 
+app.use(notFound)
 app.use(internalServerError)
 
 module.exports = app

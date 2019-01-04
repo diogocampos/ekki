@@ -2,6 +2,14 @@ const request = require('supertest')
 
 const app = require('../app')
 
+describe('GET /unknown', () => {
+  const req = () => request(app).get('/unknown')
+
+  it('responds with 404', async () => {
+    await req().expect(404, 'Not Found')
+  })
+})
+
 describe('GET /error/:type', () => {
   const req = type => request(app).get(`/error/${type}`)
 

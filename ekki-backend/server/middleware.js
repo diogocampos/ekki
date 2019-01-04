@@ -13,6 +13,13 @@ exports.wrap = asyncHandler => {
 }
 
 /**
+ * A handler that responds with 404 Not Found.
+ */
+exports.notFound = (req, res) => {
+  res.sendStatus(404)
+}
+
+/**
  * An error handler that responds with 500 Internal Server Error.
  */
 exports.internalServerError = (err, req, res, next) => {
