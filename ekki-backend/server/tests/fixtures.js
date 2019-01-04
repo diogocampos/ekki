@@ -23,10 +23,10 @@ const users = (exports.users = populator(User, [
 ]))
 
 const authenticated = (exports.authenticated = req => {
-  const token = authenticated.user.tokens[0]
-  return (...args) => req(...args).set('X-Auth', token)
+  return (...args) => req(...args).set('X-Auth', authenticated.token)
 })
-authenticated.user = userWithTokens()
+authenticated.user = users.find(user => user.tokens.length > 0)
+authenticated.token = authenticated.user.tokens[0]
 
 // Helpers
 
@@ -47,8 +47,4 @@ function populator(Model, items) {
   }
 
   return items
-}
-
-function userWithTokens() {
-  return users.find(user => user.tokens.length > 0)
 }

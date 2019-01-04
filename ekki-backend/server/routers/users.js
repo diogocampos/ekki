@@ -15,13 +15,9 @@ const authenticate = wrap(async (req, res, next) => {
   next()
 })
 
-router.get('/me', authenticate, [
-  (req, res) => {
-    const { user } = res.locals
-    res.json({ user })
-  },
-])
-
+/**
+ * Creates a new user.
+ */
 router.post('/', [
   wrap(async (req, res) => {
     const { username, password } = req.body.user
@@ -31,6 +27,9 @@ router.post('/', [
   }),
 ])
 
+/**
+ * Generates a new auth token for the user.
+ */
 router.post('/login', [
   wrap(async (req, res) => {
     const { username, password } = req.body.user
@@ -40,6 +39,27 @@ router.post('/login', [
     const token = await user.generateAuthToken()
     res.header('X-Auth', token).json({ user })
   }),
+])
+
+/**
+ * Returns the authenticated user.
+ */
+router.get('/me', authenticate, [
+  (req, res) => {
+    const { user } = res.locals
+    res.json({ user })
+  },
+])
+
+/**
+ * Removes the current auth token.
+ */
+router.delete('/me/token', authenticate, [
+  async (req, res) => {
+    const { user, token } = res.locals
+    await user.removeToken(token)
+    res.sendStatus(200)
+  },
 ])
 
 module.exports = { router }

@@ -158,3 +158,17 @@ describe('GET /users/me', () => {
     })
   })
 })
+
+describe('DELETE /users/me/token', () => {
+  const req = authenticated(() => request(app).delete('/users/me/token'))
+
+  requiresAuthentication(req)
+
+  it('deletes the auth token', async () => {
+    await req().expect(200, 'OK')
+    const { username, tokens } = authenticated.user
+    const userDoc = await User.findOne({ username })
+    expect(userDoc.tokens).toHaveLength(tokens.length - 1)
+    expect(userDoc.tokens).not.toContain(authenticated.token)
+  })
+})
