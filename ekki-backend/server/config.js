@@ -1,13 +1,17 @@
 const localMongoDB = 'mongodb://localhost:27017/Ekki'
 
+const randomSecret = () => Math.random().toString(26).slice(2) //prettier-ignore
+
 const env = {
   development: {
     PORT: process.env.PORT || 3000,
     MONGODB_URI: localMongoDB,
+    JWT_SECRET: randomSecret(),
   },
   test: {
     // PORT is not needed for testing
     MONGODB_URI: localMongoDB,
+    JWT_SECRET: randomSecret(),
   },
 }
 
