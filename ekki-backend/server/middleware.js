@@ -13,14 +13,17 @@ exports.wrap = asyncHandler => {
 }
 
 /**
- * A handler that responds with 404 Not Found.
+ * A handler that responds with 401 Unauthorized
  */
-exports.notFound = (req, res) => {
-  res.sendStatus(404)
-}
+exports.unauthorized = sendStatus(401)
 
 /**
- * A handler that responds with 400 Bad Request
+ * A handler that responds with 404 Not Found.
+ */
+exports.notFound = sendStatus(404)
+
+/**
+ * An error handler that responds with 400 Bad Request
  */
 exports.badRequest = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
@@ -39,4 +42,10 @@ exports.badRequest = (err, req, res, next) => {
 exports.internalServerError = (err, req, res, next) => {
   if (!req.path.startsWith('/error/')) console.error(err)
   res.sendStatus(500)
+}
+
+// Helpers
+
+function sendStatus(code) {
+  return (req, res) => res.sendStatus(code)
 }

@@ -33,6 +33,15 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.plugin(uniqueValidator, { message: 'Username already exists' })
 
+UserSchema.statics.findByCredentials = async function(username, password) {
+  const User = this
+  const user = await User.findOne({ username })
+  if (!user) return null
+
+  const isCorrectPassword = await bcrypt.compare(password, user.password)
+  return isCorrectPassword ? user : null
+}
+
 UserSchema.methods.generateAuthToken = async function() {
   const user = this
   const payload = { _id: user._id.toHexString() }
