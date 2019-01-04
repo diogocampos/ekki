@@ -9,8 +9,8 @@ router.post('/', [
   wrap(async (req, res) => {
     const { username, password } = req.body.user
     const user = await new User({ username, password }).save()
-    await user.generateAuthToken()
-    res.json({ user })
+    const token = await user.generateAuthToken()
+    res.header('X-Auth', token).json({ user })
   }),
 ])
 

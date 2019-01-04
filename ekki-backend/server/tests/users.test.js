@@ -51,5 +51,9 @@ describe('POST /users', () => {
         balance: 0,
       })
     })
+
+    it('responds with auth token in header', () => {
+      expect(res.headers['x-auth']).toMatch(JSON_WEB_TOKEN)
+    })
   })
 })
