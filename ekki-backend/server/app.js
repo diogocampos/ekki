@@ -1,10 +1,16 @@
 const express = require('express')
 
+const users = require('./routers/users')
 const { internalServerError, notFound, wrap } = require('./middleware')
 
 require('./config')
+require('./db/connect')
 
 const app = express()
+
+app.use(express.json())
+
+app.use('/users', users.router)
 
 if (process.env.NODE_ENV === 'test') {
   // test-only endpoints for checking the handling of internal errors
