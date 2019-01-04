@@ -7,8 +7,8 @@ const router = express.Router()
 
 router.post('/', [
   wrap(async (req, res) => {
-    const { username } = req.body.user
-    const user = await new User({ username }).save()
+    const { username, password } = req.body.user
+    const user = await new User({ username, password }).save()
     res.json({ user })
   }),
 ])

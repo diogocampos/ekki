@@ -1,10 +1,10 @@
 const express = require('express')
 
-const users = require('./routers/users')
-const { internalServerError, notFound, wrap } = require('./middleware')
-
 require('./config')
 require('./db/connect')
+
+const users = require('./routers/users')
+const { internalServerError, notFound, wrap } = require('./middleware')
 
 const app = express()
 

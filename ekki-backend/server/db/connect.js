@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 
-mongoose.connect(
-  process.env.MONGODB_URI,
-  { useNewUrlParser: true }
-)
+mongoose.connection = mongoose.createConnection(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+})
