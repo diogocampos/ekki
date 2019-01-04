@@ -42,6 +42,18 @@ UserSchema.statics.findByCredentials = async function(username, password) {
   return isCorrectPassword ? user : null
 }
 
+UserSchema.statics.findByToken = async function(token) {
+  const User = this
+  try {
+    var payload = jwt.verify(token, process.env.JWT_SECRET)
+  } catch {
+    return null
+  }
+  const user = await User.findById(payload._id)
+  const isValidToken = user && user.tokens.find(item => item === token)
+  return isValidToken ? user : null
+}
+
 UserSchema.methods.generateAuthToken = async function() {
   const user = this
   const payload = { _id: user._id.toHexString() }

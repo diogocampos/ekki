@@ -3,11 +3,12 @@ const { pick } = require('lodash')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { pojo } = require('./helpers')
+const { pojo, requiresAuthentication } = require('./helpers')
 const app = require('../app')
 const User = require('../db/User')
 
 const { any, stringMatching } = expect
+const { authenticated } = fixtures
 
 const BCRYPT_HASH = /^\$2a\$.{56}$/
 const JSON_WEB_TOKEN = /^eyJ/
@@ -49,9 +50,11 @@ describe('POST /users', () => {
     })
 
     it('responds with minimal user info in body', () => {
-      expect(res.body.user).toEqual({
-        username: user.username.toLowerCase(),
-        balance: 0,
+      expect(res.body).toEqual({
+        user: {
+          username: user.username.toLowerCase(),
+          balance: 0,
+        },
       })
     })
 
@@ -139,6 +142,19 @@ describe('POST /users/login', () => {
       // check that the user's tokens have not been modified
       const userDoc = pojo(await User.findOne({ username }))
       expect(userDoc.tokens).toEqual(tokens)
+    })
+  })
+})
+
+describe('GET /users/me', () => {
+  const req = authenticated(() => request(app).get('/users/me'))
+
+  requiresAuthentication(req)
+
+  it('returns the authenticated user', async () => {
+    const res = await req().expect(200)
+    expect(res.body).toEqual({
+      user: pick(authenticated.user, 'username', 'balance'),
     })
   })
 })
