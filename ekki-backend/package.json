@@ -1,0 +1,21 @@
+{
+  "name": "ekki-backend",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "db:dev": "mongod --dbpath ./mongodb/dev",
+    "db:test": "mongod --dbpath ./mongodb/test --storageEngine ephemeralForTest",
+    "start": "node index.js",
+    "test": "NODE_ENV=test mocha server/tests/*.test.js",
+    "test:watch": "npm test -- --watch --reporter min"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongoose": "^5.4.1"
+  },
+  "devDependencies": {
+    "expect": "^23.6.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
+  }
+}
