@@ -44,5 +44,12 @@ describe('POST /users', () => {
       const userDoc = await User.findOne({ username: user.username })
       expect(userDoc).toMatchObject({ balance: 0 })
     })
+
+    it('responds with minimal user info in body', () => {
+      expect(res.body.user).toEqual({
+        username: user.username,
+        balance: 0,
+      })
+    })
   })
 })

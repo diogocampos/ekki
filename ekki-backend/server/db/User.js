@@ -31,6 +31,14 @@ UserSchema.methods.generateAuthToken = async function() {
   return token
 }
 
+UserSchema.methods.toJSON = function() {
+  const user = this
+  return {
+    username: user.username,
+    balance: user.balance,
+  }
+}
+
 UserSchema.pre('save', async function() {
   const user = this
   if (user.isModified('password')) {
