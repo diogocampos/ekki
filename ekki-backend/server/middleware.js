@@ -20,9 +20,23 @@ exports.notFound = (req, res) => {
 }
 
 /**
+ * A handler that responds with 400 Bad Request
+ */
+exports.badRequest = (err, req, res, next) => {
+  if (err.name === 'ValidationError') {
+    const errors = {}
+    for (const [path, { message }] of Object.entries(err.errors)) {
+      errors[path] = message
+    }
+    return res.status(400).json({ errors })
+  }
+  next(err)
+}
+
+/**
  * An error handler that responds with 500 Internal Server Error.
  */
 exports.internalServerError = (err, req, res, next) => {
-  if (process.env.NODE_ENV !== 'test') console.error(err)
+  if (!req.path.startsWith('/error/')) console.error(err)
   res.sendStatus(500)
 }

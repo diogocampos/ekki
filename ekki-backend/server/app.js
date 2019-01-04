@@ -4,7 +4,7 @@ require('./config')
 require('./db/connect')
 
 const users = require('./routers/users')
-const { internalServerError, notFound, wrap } = require('./middleware')
+const { wrap, ...middleware } = require('./middleware')
 
 const app = express()
 
@@ -19,7 +19,8 @@ if (process.env.NODE_ENV === 'test') {
   app.get('/error/reject', wrap(async () => { throw false })) //prettier-ignore
 }
 
-app.use(notFound)
-app.use(internalServerError)
+app.use(middleware.notFound)
+app.use(middleware.badRequest)
+app.use(middleware.internalServerError)
 
 module.exports = app

@@ -2,9 +2,14 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
+const VALID_USERNAME = /^[a-z\d]+([_.][a-z\d]+)*$/i
+
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
+    required: [true, 'Username is required'],
+    trim: true,
+    match: [VALID_USERNAME, 'Username is invalid'],
   },
   balance: {
     type: Number,

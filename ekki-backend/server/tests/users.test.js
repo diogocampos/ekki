@@ -6,10 +6,12 @@ const { pojo } = require('./helpers')
 const app = require('../app')
 const User = require('../db/User')
 
-const { stringMatching } = expect
+const { any, stringMatching } = expect
 
 const BCRYPT_HASH = /^\$2a\$.{56}$/
 const JSON_WEB_TOKEN = /^eyJ/
+
+beforeEach(fixtures.users.populate)
 
 describe('POST /users', () => {
   const req = body =>
@@ -20,7 +22,7 @@ describe('POST /users', () => {
   describe('with valid data', () => {
     let user, res, userDoc
     beforeEach(async () => {
-      user = fixtures.randomUser()
+      user = fixtures.fakeUser()
       res = await req({ user }).expect(200)
       userDoc = pojo(await User.findOne({ username: user.username }))
     })
@@ -54,6 +56,26 @@ describe('POST /users', () => {
 
     it('responds with auth token in header', () => {
       expect(res.headers['x-auth']).toMatch(JSON_WEB_TOKEN)
+    })
+  })
+
+  describe('validation', () => {
+    afterEach(async () => {
+      // check that a new user has not been created
+      const users = await User.find()
+      expect(users).toHaveLength(fixtures.users.length)
+    })
+
+    it('checks if username is invalid', async () => {
+      const invalidUsernames = [undefined, '', ' ', '!@#$', {}, [], null]
+      await Promise.all(
+        invalidUsernames.map(async username => {
+          const res = await req({
+            user: { username, password: 'password' },
+          }).expect(400)
+          expect(res.body).toEqual({ errors: { username: any(String) } })
+        })
+      )
     })
   })
 })
