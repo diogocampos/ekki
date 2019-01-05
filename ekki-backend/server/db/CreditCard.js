@@ -14,6 +14,9 @@ const CreditCardSchema = new mongoose.Schema({
   },
   holder: {
     type: String,
+    required: true,
+    trim: true,
+    minlength: [1, 'Card holder is required'],
   },
 })
 

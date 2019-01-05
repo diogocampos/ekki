@@ -62,5 +62,11 @@ describe('POST /cards', () => {
         })
       )
     })
+
+    it('checks if holder name is present', async () => {
+      const card = { ...fixtures.fakeCard(), holder: ' ' }
+      const res = await req({ card }).expect(400)
+      expect(res.body).toEqual({ errors: { holder: any(String) } })
+    })
   })
 })
