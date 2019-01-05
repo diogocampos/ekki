@@ -64,3 +64,18 @@ describe('POST /contacts', () => {
     })
   })
 })
+
+describe('GET /contacts', () => {
+  const req = authenticated(() => request(app).get('/contacts'))
+
+  requiresAuthentication(req)
+
+  it("returns the user's contacts", async () => {
+    const res = await req().expect(200)
+    expect(res.body).toEqual({
+      contacts: fixtures
+        .contactsOf(authenticated.user)
+        .map(data => new Contact(data).toJSON()),
+    })
+  })
+})

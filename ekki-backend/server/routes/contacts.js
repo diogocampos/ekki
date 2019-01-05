@@ -30,4 +30,15 @@ router.post('/', authenticate, [
   }),
 ])
 
+/**
+ * Returns the user's contacts.
+ */
+router.get('/', authenticate, [
+  wrap(async (req, res) => {
+    const { user } = res.locals
+    const contacts = await Contact.find({ _owner: user._id })
+    res.json({ contacts })
+  }),
+])
+
 module.exports = { router }
