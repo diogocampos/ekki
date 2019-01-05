@@ -26,6 +26,11 @@ exports.validateId = (req, res, next, _id) => {
 }
 
 /**
+ * A handler that responds with 400 Bad Request
+ */
+exports.badRequest = sendStatus(400)
+
+/**
  * A handler that responds with 401 Unauthorized
  */
 exports.unauthorized = sendStatus(401)
@@ -36,9 +41,9 @@ exports.unauthorized = sendStatus(401)
 const notFound = (exports.notFound = sendStatus(404))
 
 /**
- * An error handler that responds with 400 Bad Request
+ * An error handler that responds to validation errors with 400 Bad Request
  */
-exports.badRequest = (err, req, res, next) => {
+exports.handleValidationError = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     const errors = {}
     for (const [path, { message }] of Object.entries(err.errors)) {
@@ -52,7 +57,7 @@ exports.badRequest = (err, req, res, next) => {
 /**
  * An error handler that responds with 500 Internal Server Error.
  */
-exports.internalServerError = (err, req, res, next) => {
+exports.handleInternalError = (err, req, res, next) => {
   if (!req.path.startsWith('/error/')) console.error(err)
   res.sendStatus(500)
 }

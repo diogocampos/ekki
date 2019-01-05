@@ -9,6 +9,8 @@ const Contact = require('../db/Contact')
 const { stringMatching } = expect
 const { authenticated } = fixtures
 
+beforeEach(fixtures.contacts.populate)
+
 describe('POST /contacts', () => {
   const req = authenticated(body =>
     request(app)
@@ -42,6 +44,23 @@ describe('POST /contacts', () => {
           favorite: false,
         },
       })
+    })
+  })
+
+  describe('with invalid data', () => {
+    afterEach('does not create a new contact', async () => {
+      const contactDocs = await Contact.find({})
+      expect(contactDocs).toHaveLength(fixtures.contacts.length)
+    })
+
+    it('responds with 404 if the username does not exist', async () => {
+      const contact = { username: fixtures.fakeUsername() }
+      await req({ contact }).expect(404, 'Not Found')
+    })
+
+    it('responds with 400 if the contact already exists', async () => {
+      const [{ username }] = fixtures.contactsOf(authenticated.user)
+      await req({ contact: { username } }).expect(400, 'Bad Request')
     })
   })
 })

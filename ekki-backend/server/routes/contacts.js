@@ -3,7 +3,7 @@ const express = require('express')
 const { authenticate } = require('./users')
 const Contact = require('../db/Contact')
 const User = require('../db/User')
-const { notFound, wrap } = require('../middleware')
+const { badRequest, notFound, wrap } = require('../middleware')
 
 const router = express.Router()
 
@@ -12,10 +12,19 @@ const router = express.Router()
  */
 router.post('/', authenticate, [
   wrap(async (req, res) => {
-    const target = await User.findOne({ username: req.body.contact.username })
-    if (!target) return notFound(req, res)
+    const { user } = res.locals
+    const { username } = req.body.contact
 
-    const data = { _owner: res.locals.user._id, username: target.username }
+    // TODO use a compound unique index for (_owner, username) ?
+
+    const [targetUser, existingContact] = await Promise.all([
+      User.findOne({ username }),
+      Contact.findOne({ _owner: user._id, username }),
+    ])
+    if (!targetUser) return notFound(req, res)
+    if (existingContact) return badRequest(req, res)
+
+    const data = { _owner: user._id, username: targetUser.username }
     const contact = await new Contact(data).save()
     res.json({ contact })
   }),

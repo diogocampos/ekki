@@ -24,7 +24,8 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 app.use(middleware.notFound)
-app.use(middleware.badRequest)
-app.use(middleware.internalServerError)
+
+app.use(middleware.handleValidationError)
+app.use(middleware.handleInternalError)
 
 module.exports = app
