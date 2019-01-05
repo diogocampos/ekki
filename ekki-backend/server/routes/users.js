@@ -5,6 +5,9 @@ const { unauthorized, wrap } = require('../middleware')
 
 const router = express.Router()
 
+/**
+ * Authentication middleware.
+ */
 const authenticate = wrap(async (req, res, next) => {
   const token = req.header('x-auth')
   const user = token && (await User.findByToken(token))

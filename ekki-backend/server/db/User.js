@@ -33,6 +33,9 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.plugin(uniqueValidator, { message: 'Username already exists' })
 
+/**
+ * Returns the user with the given username if the password is correct.
+ */
 UserSchema.statics.findByCredentials = async function(username, password) {
   const User = this
   const user = await User.findOne({ username })
@@ -42,6 +45,9 @@ UserSchema.statics.findByCredentials = async function(username, password) {
   return isCorrectPassword ? user : null
 }
 
+/**
+ * Verifies an auth token and returns the corresponding user.
+ */
 UserSchema.statics.findByToken = async function(token) {
   const User = this
   try {
@@ -54,6 +60,9 @@ UserSchema.statics.findByToken = async function(token) {
   return isValidToken ? user : null
 }
 
+/**
+ * Creates, saves and returns a new auth token for the user.
+ */
 UserSchema.methods.generateAuthToken = async function() {
   const user = this
   const payload = { _id: user._id.toHexString() }
@@ -64,11 +73,17 @@ UserSchema.methods.generateAuthToken = async function() {
   return token
 }
 
+/**
+ * Removes one of the user's auth tokens.
+ */
 UserSchema.methods.removeToken = async function(token) {
   const user = this
   await user.updateOne({ $pull: { tokens: token } })
 }
 
+/**
+ * Returns the properties that should be included in response bodies.
+ */
 UserSchema.methods.toJSON = function() {
   const user = this
   return {
@@ -77,6 +92,9 @@ UserSchema.methods.toJSON = function() {
   }
 }
 
+/**
+ * Replaces the password with its salted hash.
+ */
 UserSchema.pre('save', async function() {
   const user = this
   if (user.isModified('password')) {

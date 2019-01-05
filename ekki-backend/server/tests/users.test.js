@@ -49,7 +49,7 @@ describe('POST /users', () => {
       expect(userDoc).toMatchObject({ balance: 0 })
     })
 
-    it('responds with minimal user info in body', () => {
+    it('includes minimal user info in response body', () => {
       expect(res.body).toEqual({
         user: {
           username: user.username.toLowerCase(),
@@ -58,14 +58,13 @@ describe('POST /users', () => {
       })
     })
 
-    it('responds with auth token in header', () => {
+    it('includes auth token in response header', () => {
       expect(res.headers['x-auth']).toMatch(JSON_WEB_TOKEN)
     })
   })
 
-  describe('validation', () => {
-    afterEach(async () => {
-      // check that a new user has not been created
+  describe('with invalid data', () => {
+    afterEach('does not create a new user', async () => {
       const users = await User.find()
       expect(users).toHaveLength(fixtures.users.length)
     })
@@ -107,7 +106,7 @@ describe('POST /users/login', () => {
       user = fixtures.users[0]
       res = await req({ user: pick(user, 'username', 'password') }).expect(200)
       token = res.headers['x-auth']
-      userDoc = await User.findOne({ username: user.username })
+      userDoc = await User.findById(user._id)
     })
 
     it('generates and stores a new auth token', () => {
@@ -124,23 +123,21 @@ describe('POST /users/login', () => {
 
   describe('with invalid credentials', () => {
     let res
-    afterEach(() => {
-      // check that no auth token has been returned
+    afterEach('does not return an auth token', () => {
       expect(res.headers['x-auth']).toBeUndefined()
     })
 
-    it('responds with 401 if username does not exist', async () => {
+    it('responds with 401 if the username does not exist', async () => {
       const user = fixtures.fakeUser()
       res = await req({ user }).expect(401, 'Unauthorized')
     })
 
-    it('responds with 401 if password is incorrect', async () => {
-      const { username, password, tokens } = fixtures.users[0]
+    it('does not creat a token if the password is incorrect', async () => {
+      const { _id, username, password, tokens } = fixtures.users[0]
       const user = { username, password: `wrong${password}` }
       res = await req({ user }).expect(401, 'Unauthorized')
 
-      // check that the user's tokens have not been modified
-      const userDoc = pojo(await User.findOne({ username }))
+      const userDoc = pojo(await User.findById(_id))
       expect(userDoc.tokens).toEqual(tokens)
     })
   })
