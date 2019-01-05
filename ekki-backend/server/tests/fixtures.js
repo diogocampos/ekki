@@ -3,6 +3,16 @@ const casual = require('casual')
 const { newAuthToken, newId, pojo } = require('./helpers')
 const User = require('../db/User')
 
+// CreditCard fixtures
+
+exports.fakeCard = () => ({
+  number: casual.card_number(),
+  expiry: casual.card_exp,
+  holder: casual.full_name,
+})
+
+// User fixtures
+
 const fakeUser = (exports.fakeUser = () => ({
   username: casual.username,
   password: casual.password,

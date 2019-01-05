@@ -65,4 +65,7 @@ router.delete('/me/token', authenticate, [
   },
 ])
 
-module.exports = { router }
+module.exports = {
+  authenticate,
+  router,
+}
