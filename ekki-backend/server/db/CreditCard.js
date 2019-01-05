@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const VALID_CARD_NUMBER = /^\d{12,19}$/
+const VALID_EXPIRY_DATE = /^(0[1-9]|1[0-2])\/\d\d$/
 
 const CreditCardSchema = new mongoose.Schema({
   number: {
@@ -11,6 +12,9 @@ const CreditCardSchema = new mongoose.Schema({
   },
   expiry: {
     type: String,
+    required: true,
+    trim: true,
+    match: [VALID_EXPIRY_DATE, 'Card expiry date is invalid'],
   },
   holder: {
     type: String,

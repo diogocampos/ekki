@@ -63,6 +63,17 @@ describe('POST /cards', () => {
       )
     })
 
+    it('checks if expiry date is valid', async () => {
+      const invalidDates = ['', ' ', '1', 'foo', '00/99', '13/99']
+      await Promise.all(
+        invalidDates.map(async expiry => {
+          const card = { ...fixtures.fakeCard(), expiry }
+          const res = await req({ card }).expect(400)
+          expect(res.body).toEqual({ errors: { expiry: any(String) } })
+        })
+      )
+    })
+
     it('checks if holder name is present', async () => {
       const card = { ...fixtures.fakeCard(), holder: ' ' }
       const res = await req({ card }).expect(400)
