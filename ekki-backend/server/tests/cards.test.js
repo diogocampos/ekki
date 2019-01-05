@@ -4,6 +4,7 @@ const request = require('supertest')
 const fixtures = require('./fixtures')
 const {
   newId,
+  OBJECT_ID,
   pojo,
   requiresAuthentication,
   validatesId,
@@ -15,7 +16,6 @@ const { any, objectContaining, stringMatching } = expect
 const { authenticated } = fixtures
 
 const MASKED_CREDIT_CARD_NUMBER = /^[*]+\d{4}$/
-const OBJECT_ID = /^[0-9a-f]{24}$/
 
 beforeEach(fixtures.cards.populate)
 

@@ -1,6 +1,7 @@
 const casual = require('casual')
 
 const { newAuthToken, newId, pojo } = require('./helpers')
+const Contact = require('../db/Contact')
 const CreditCard = require('../db/CreditCard')
 const User = require('../db/User')
 
@@ -24,6 +25,24 @@ const authenticated = (exports.authenticated = req => {
 })
 authenticated.user = users.find(user => user.tokens.length > 0)
 authenticated.token = authenticated.user.tokens[0]
+
+// Contact fixtures
+
+const contacts = (exports.contacts = populator(Contact, []))
+
+exports.newContactFor = user => {
+  const contacts = contactsOf(user)
+  const target = users.find(
+    target =>
+      target.username !== user.username &&
+      !contacts.find(contact => contact.username === target.username)
+  )
+  return { username: target.username }
+}
+
+function contactsOf(user) {
+  return contacts.filter(contact => contact._owner === user._id)
+}
 
 // CreditCard fixtures
 

@@ -2,6 +2,11 @@ const jwt = require('jsonwebtoken')
 const { ObjectId } = require('mongoose').Types
 
 /**
+ * A regular expression that matches valid MongoDB object IDs.
+ */
+exports.OBJECT_ID = /^[0-9a-f]{24}$/
+
+/**
  * Creates a valid auth token.
  */
 const newAuthToken = (exports.newAuthToken = (_id = newId()) => {

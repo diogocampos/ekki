@@ -4,6 +4,7 @@ require('./config')
 require('./db/connect')
 
 const cards = require('./routes/cards')
+const contacts = require('./routes/contacts')
 const users = require('./routes/users')
 const { wrap, ...middleware } = require('./middleware')
 
@@ -12,6 +13,7 @@ const app = express()
 app.use(express.json())
 
 app.use('/cards', cards.router)
+app.use('/contacts', contacts.router)
 app.use('/users', users.router)
 
 if (process.env.NODE_ENV === 'test') {
