@@ -2,7 +2,7 @@ const expect = require('expect')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { requiresAuthentication } = require('./helpers')
+const { pojo, requiresAuthentication } = require('./helpers')
 const app = require('../app')
 const CreditCard = require('../db/CreditCard')
 
@@ -31,8 +31,11 @@ describe('POST /cards', () => {
     })
 
     it('stores a new credit card', async () => {
-      const cardDoc = await CreditCard.findById(res.body.card._id)
-      expect(cardDoc).toMatchObject(card)
+      const cardDoc = pojo(await CreditCard.findById(res.body.card._id))
+      expect(cardDoc).toMatchObject({
+        ...card,
+        _user: authenticated.user._id,
+      })
     })
 
     it('includes card info in response body', () => {

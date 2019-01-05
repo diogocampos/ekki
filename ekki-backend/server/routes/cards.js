@@ -13,8 +13,8 @@ const router = express.Router()
 router.post('/', authenticate, [
   wrap(async (req, res) => {
     const data = {
+      _user: res.locals.user._id,
       ...pick(req.body.card, 'number', 'expiry', 'holder'),
-      _owner: res.locals.user._id,
     }
     const card = await new CreditCard(data).save()
     res.json({ card })

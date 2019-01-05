@@ -4,6 +4,10 @@ const VALID_CARD_NUMBER = /^\d{12,19}$/
 const VALID_EXPIRY_DATE = /^(0[1-9]|1[0-2])\/\d\d$/
 
 const CreditCardSchema = new mongoose.Schema({
+  _user: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   number: {
     type: String,
     required: true,
