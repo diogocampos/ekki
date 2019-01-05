@@ -84,3 +84,18 @@ describe('POST /cards', () => {
     })
   })
 })
+
+describe('GET /cards', () => {
+  const req = authenticated(() => request(app).get('/cards'))
+
+  requiresAuthentication(req)
+
+  it("returns the user's credit cards", async () => {
+    const res = await req().expect(200)
+    expect(res.body).toEqual({
+      cards: fixtures
+        .cardsOf(authenticated.user)
+        .map(card => new CreditCard(card).toJSON()),
+    })
+  })
+})

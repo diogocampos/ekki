@@ -34,7 +34,7 @@ const CreditCardSchema = new mongoose.Schema({
 CreditCardSchema.methods.toJSON = function() {
   const card = this
   return {
-    _id: card._id,
+    _id: card._id.toHexString(),
     number: maskCreditCardNumber(card.number),
     expiry: card.expiry,
     holder: card.holder,

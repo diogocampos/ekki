@@ -21,4 +21,15 @@ router.post('/', authenticate, [
   }),
 ])
 
+/**
+ * Returns the users's stored credit cards.
+ */
+router.get('/', authenticate, [
+  wrap(async (req, res) => {
+    const { user } = res.locals
+    const cards = await CreditCard.find({ _user: user._id })
+    res.json({ cards })
+  }),
+])
+
 module.exports = { router }

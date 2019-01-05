@@ -4,16 +4,6 @@ const { newAuthToken, newId, pojo } = require('./helpers')
 const CreditCard = require('../db/CreditCard')
 const User = require('../db/User')
 
-// CreditCard fixtures
-
-exports.fakeCard = () => ({
-  number: casual.card_number(),
-  expiry: casual.card_exp,
-  holder: casual.full_name,
-})
-
-exports.cards = populator(CreditCard, [])
-
 // User fixtures
 
 const fakeUser = (exports.fakeUser = () => ({
@@ -34,6 +24,25 @@ const authenticated = (exports.authenticated = req => {
 })
 authenticated.user = users.find(user => user.tokens.length > 0)
 authenticated.token = authenticated.user.tokens[0]
+
+// CreditCard fixtures
+
+const fakeCard = (exports.fakeCard = () => ({
+  number: casual.card_number(),
+  expiry: casual.card_exp,
+  holder: casual.full_name,
+}))
+
+const cards = (exports.cards = populator(CreditCard, [
+  {
+    ...fakeCard(),
+    _user: authenticated.user._id,
+  },
+]))
+
+exports.cardsOf = user => {
+  return cards.filter(card => card._user === user._id)
+}
 
 // Helpers
 
