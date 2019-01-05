@@ -1,6 +1,7 @@
 const casual = require('casual')
 
 const { newAuthToken, newId, pojo } = require('./helpers')
+const CreditCard = require('../db/CreditCard')
 const User = require('../db/User')
 
 // CreditCard fixtures
@@ -10,6 +11,8 @@ exports.fakeCard = () => ({
   expiry: casual.card_exp,
   holder: casual.full_name,
 })
+
+exports.cards = populator(CreditCard, [])
 
 // User fixtures
 

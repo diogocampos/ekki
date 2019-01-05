@@ -1,8 +1,13 @@
 const mongoose = require('mongoose')
 
+const VALID_CARD_NUMBER = /^\d{12,19}$/
+
 const CreditCardSchema = new mongoose.Schema({
   number: {
     type: String,
+    required: true,
+    trim: true,
+    match: [VALID_CARD_NUMBER, 'Card number is invalid'],
   },
   expiry: {
     type: String,
