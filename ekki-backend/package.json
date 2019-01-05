@@ -7,7 +7,7 @@
     "db:test": "mongod --dbpath ./mongodb/test --storageEngine ephemeralForTest",
     "start": "node index.js",
     "test": "NODE_ENV=test mocha server/tests/*.test.js",
-    "test:watch": "npm test -- --watch --reporter min"
+    "test:watch": "npm test -- --watch --bail --reporter dot"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
