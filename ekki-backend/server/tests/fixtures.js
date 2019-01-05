@@ -38,10 +38,18 @@ const cards = (exports.cards = populator(CreditCard, [
     ...fakeCard(),
     _user: authenticated.user._id,
   },
+  {
+    ...fakeCard(),
+    _user: newId(),
+  },
 ]))
 
 exports.cardsOf = user => {
   return cards.filter(card => card._user === user._id)
+}
+
+exports.cardNotOf = user => {
+  return cards.find(card => card._user !== user._id)
 }
 
 // Helpers

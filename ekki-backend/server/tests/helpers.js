@@ -41,3 +41,18 @@ exports.requiresAuthentication = req => {
     )
   })
 }
+
+/**
+ * Generates a test that checks if an endpoint ignores invalid `ObjectId`s
+ */
+exports.validatesId = requestById => {
+  it('validates `id` parameter', async () => {
+    const badIds = [
+      'foobar', // invalid
+      newId(), // unknown
+    ]
+    await Promise.all(
+      badIds.map(id => requestById(id).expect(404, 'Not Found'))
+    )
+  })
+}

@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 /**
  * A wrapper for async route handlers, to avoid always having to include a
  * try/catch block inside them.
@@ -13,6 +15,17 @@ exports.wrap = asyncHandler => {
 }
 
 /**
+ * A param callback for routes with an `_id` parameter
+ * http://expressjs.com/en/4x/api.html#router.param
+ */
+exports.validateId = (req, res, next, _id) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params._id)) {
+    return notFound(req, res)
+  }
+  next()
+}
+
+/**
  * A handler that responds with 401 Unauthorized
  */
 exports.unauthorized = sendStatus(401)
@@ -20,7 +33,7 @@ exports.unauthorized = sendStatus(401)
 /**
  * A handler that responds with 404 Not Found.
  */
-exports.notFound = sendStatus(404)
+const notFound = (exports.notFound = sendStatus(404))
 
 /**
  * An error handler that responds with 400 Bad Request

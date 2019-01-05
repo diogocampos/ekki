@@ -2,11 +2,16 @@ const expect = require('expect')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { pojo, requiresAuthentication } = require('./helpers')
+const {
+  newId,
+  pojo,
+  requiresAuthentication,
+  validatesId,
+} = require('./helpers')
 const app = require('../app')
 const CreditCard = require('../db/CreditCard')
 
-const { any, stringMatching } = expect
+const { any, objectContaining, stringMatching } = expect
 const { authenticated } = fixtures
 
 const MASKED_CREDIT_CARD_NUMBER = /^[*]+\d{4}$/
@@ -97,5 +102,29 @@ describe('GET /cards', () => {
         .cardsOf(authenticated.user)
         .map(card => new CreditCard(card).toJSON()),
     })
+  })
+})
+
+describe('DELETE /cards/:id', () => {
+  const req = authenticated(id => request(app).delete(`/cards/${id}`))
+
+  requiresAuthentication(() => req(newId()))
+  validatesId(req)
+
+  it('removes the credit card with the given id', async () => {
+    const [card] = fixtures.cardsOf(authenticated.user)
+    await req(card._id).expect(200, 'OK')
+
+    const cardDocs = await CreditCard.find({})
+    expect(cardDocs).toHaveLength(fixtures.cards.length - 1)
+    expect(cardDocs).not.toContain(objectContaining({ _id: card._id }))
+  })
+
+  it("does not remove other users' cards", async () => {
+    const card = fixtures.cardNotOf(authenticated.user)
+    await req(card._id).expect(404, 'Not Found')
+
+    const cardDocs = await CreditCard.find({})
+    expect(cardDocs).toHaveLength(fixtures.cards.length)
   })
 })
