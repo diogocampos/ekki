@@ -1,18 +1,12 @@
 const casual = require('casual')
-const jwt = require('jsonwebtoken')
-const { ObjectId } = require('mongoose').Types
 
-const { pojo } = require('./helpers')
+const { newAuthToken, newId, pojo } = require('./helpers')
 const User = require('../db/User')
 
 const fakeUser = (exports.fakeUser = () => ({
   username: casual.username,
   password: casual.password,
 }))
-
-const newAuthToken = (exports.newAuthToken = (_id = newId()) => {
-  return jwt.sign({ _id }, process.env.JWT_SECRET)
-})
 
 const users = (exports.users = populator(User, [
   fakeUser(),
@@ -29,10 +23,6 @@ authenticated.user = users.find(user => user.tokens.length > 0)
 authenticated.token = authenticated.user.tokens[0]
 
 // Helpers
-
-function newId() {
-  return new ObjectId().toHexString()
-}
 
 function populator(Model, items) {
   items = items.map(arg => {
