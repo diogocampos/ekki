@@ -1,9 +1,10 @@
 const express = require('express')
 
 const { authenticate } = require('./users')
+const CreditCard = require('../db/CreditCard')
 const Transfer = require('../db/Transfer')
-const { wrap } = require('../middleware')
 const User = require('../db/User')
+const { wrap } = require('../middleware')
 
 const router = express.Router()
 
@@ -12,7 +13,7 @@ const router = express.Router()
  */
 router.post('/', authenticate, [
   wrap(async (req, res) => {
-    const { to, amount } = req.body.transfer
+    const { to, amount: totalAmount, cardId } = req.body.transfer
     const sender = res.locals.user
 
     const receiver = await User.findOne({ username: to })
@@ -23,13 +24,29 @@ router.post('/', authenticate, [
       Transfer.getBalanceForUsername(receiver.username),
     ])
 
+    let amountFromBalance = totalAmount
+    let amountFromCard = 0
+
+    if (totalAmount > senderBalance) {
+      // insufficient balance: require credit card id
+      if (!cardId) return
+
+      const card = await CreditCard.findOne({ _id: cardId, _owner: sender._id })
+      if (!card) return
+
+      amountFromBalance = senderBalance
+      amountFromCard = totalAmount - amountFromBalance
+
+      // TODO: Charge the card!
+    }
+
     const data = {
       sender: sender.username,
       receiver: receiver.username,
-      amountFromBalance: amount,
-      amountFromCard: 0,
-      senderBalance: senderBalance - amount,
-      receiverBalance: receiverBalance + amount,
+      amountFromBalance,
+      amountFromCard,
+      senderBalance: senderBalance - amountFromBalance,
+      receiverBalance: receiverBalance + totalAmount,
     }
 
     const transfer = await new Transfer(data).save()

@@ -21,21 +21,37 @@ describe('POST /transfers', () => {
   describe('with valid data', () => {
     const sender = authenticated.user
     const receiver = fixtures.contactsOf(sender)[0]
-    let amount
+    let amount, res, expected
 
     specify('with enough balance', async () => {
       amount = 1
       const transfer = { to: receiver.username, amount }
-      const res = await req({ transfer }).expect(200)
+      res = await req({ transfer }).expect(200)
 
-      const expected = {
+      expected = {
         sender: sender.username,
         receiver: receiver.username,
         amountFromBalance: amount,
         amountFromCard: 0,
       }
+    })
 
-      // stores the transfer in the database
+    specify('without enough balance, but with a credit card', async () => {
+      const balance = fixtures.balanceOf(sender)
+      amount = balance + 1
+      const card = fixtures.cardsOf(sender)[0]
+      const transfer = { to: receiver.username, amount, cardId: card._id }
+      res = await req({ transfer }).expect(200)
+
+      expected = {
+        sender: sender.username,
+        receiver: receiver.username,
+        amountFromBalance: balance,
+        amountFromCard: amount - balance,
+      }
+    })
+
+    afterEach('stores the transfer and includes info in response', async () => {
       const transferDoc = await Transfer.findById(res.body.transfer._id)
       expect(transferDoc).toMatchObject({
         ...expected,
@@ -44,7 +60,6 @@ describe('POST /transfers', () => {
         createdAt: any(Date),
       })
 
-      // includes info in response body
       expect(res.body).toEqual({
         transfer: {
           ...expected,
@@ -57,7 +72,7 @@ describe('POST /transfers', () => {
     afterEach("updates the sender's balance", async () => {
       const oldBalance = fixtures.balanceOf(sender)
       const newBalance = await Transfer.getBalanceForUsername(sender.username)
-      expect(newBalance).toEqual(oldBalance - amount)
+      expect(newBalance).toEqual(oldBalance - Math.min(amount, oldBalance))
     })
 
     afterEach("updates the receiver's balance", async () => {
