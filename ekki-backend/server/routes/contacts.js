@@ -61,4 +61,16 @@ router.patch('/:_id', authenticate, [
   }),
 ])
 
+/**
+ * Deletes a contact.
+ */
+router.delete('/:_id', authenticate, [
+  wrap(async (req, res) => {
+    const { _id } = req.params
+    const { user } = res.locals
+    const contact = await Contact.findOneAndDelete({ _id, _owner: user._id })
+    contact ? res.sendStatus(200) : notFound(req, res)
+  }),
+])
+
 module.exports = { router }

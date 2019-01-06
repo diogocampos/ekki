@@ -12,7 +12,7 @@ const {
 const app = require('../app')
 const Contact = require('../db/Contact')
 
-const { stringMatching } = expect
+const { objectContaining, stringMatching } = expect
 const { authenticated } = fixtures
 
 beforeEach(fixtures.contacts.populate)
@@ -93,7 +93,7 @@ describe('PATCH /contacts/:id', () => {
       .send(body)
   )
 
-  requiresAuthentication(() => req(newId()))
+  requiresAuthentication(() => req(newId(), {}))
   validatesId(req)
 
   it('marks or unmarks the contact as a favorite and returns it', async () => {
@@ -119,5 +119,29 @@ describe('PATCH /contacts/:id', () => {
 
     const contactDoc = pojo(await Contact.findById(contact._id))
     expect(contactDoc).toMatchObject(contact)
+  })
+})
+
+describe('DELETE /contacts/:id', () => {
+  const req = authenticated(id => request(app).delete(`/contacts/${id}`))
+
+  requiresAuthentication(() => req(newId()))
+  validatesId(req)
+
+  it('removes the contact with the given id and returns the id', async () => {
+    const [contact] = fixtures.contactsOf(authenticated.user)
+    await req(contact._id).expect(200)
+
+    const contactDocs = await Contact.find({})
+    expect(contactDocs).toHaveLength(fixtures.contacts.length - 1)
+    expect(contactDocs).not.toContain(objectContaining({ _id: contact._id }))
+  })
+
+  it("does not remove other users' contacts", async () => {
+    const contact = fixtures.contactNotOf(authenticated.user)
+    await req(contact._id).expect(404)
+
+    const contactDocs = await Contact.find({})
+    expect(contactDocs).toHaveLength(fixtures.contacts.length)
   })
 })
