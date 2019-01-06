@@ -30,12 +30,12 @@ describe('POST /users', () => {
     })
 
     it('creates new user with the given username', () => {
-      expect(userDoc).toMatchObject({ username: user.username.toLowerCase() })
+      expect(userDoc.username).toBe(user.username.toLowerCase())
     })
 
     it('saves a salted hash of the given password', () => {
       expect(userDoc.password).not.toBe(user.password)
-      expect(userDoc).toMatchObject({ password: stringMatching(BCRYPT_HASH) })
+      expect(userDoc.password).toMatch(BCRYPT_HASH)
     })
 
     it('generates an auth token', async () => {
@@ -44,17 +44,9 @@ describe('POST /users', () => {
       })
     })
 
-    it('sets the initial balance to zero', async () => {
-      const userDoc = await User.findOne({ username: user.username })
-      expect(userDoc).toMatchObject({ balance: 0 })
-    })
-
-    it('includes minimal user info in response body', () => {
+    it('includes user info in response body', () => {
       expect(res.body).toEqual({
-        user: {
-          username: user.username.toLowerCase(),
-          balance: 0,
-        },
+        user: { username: user.username.toLowerCase() },
       })
     })
 
@@ -64,11 +56,6 @@ describe('POST /users', () => {
   })
 
   describe('with invalid data', () => {
-    afterEach('does not create a new user', async () => {
-      const users = await User.find()
-      expect(users).toHaveLength(fixtures.users.length)
-    })
-
     it('checks if username is invalid', async () => {
       const invalidUsernames = [undefined, '', ' ', '!@#$', {}, [], null]
       await Promise.all(
@@ -90,6 +77,11 @@ describe('POST /users', () => {
       const user = { username: fixtures.fakeUsername(), password: '1234' }
       const res = await req({ user }).expect(400)
       expect(res.body).toEqual({ errors: { password: any(String) } })
+    })
+
+    afterEach('does not create a new user', async () => {
+      const users = await User.find()
+      expect(users).toHaveLength(fixtures.users.length)
     })
   })
 })
@@ -115,17 +107,14 @@ describe('POST /users/login', () => {
     })
 
     it('returns user info with auth token in header', () => {
-      const { username, balance = 0 } = user
+      const { username } = user
       expect(userDoc.tokens).toContainEqual(token)
-      expect(res.body).toEqual({ user: { username, balance } })
+      expect(res.body).toEqual({ user: { username } })
     })
   })
 
   describe('with invalid credentials', () => {
     let res
-    afterEach('does not return an auth token', () => {
-      expect(res.headers['x-auth']).toBeUndefined()
-    })
 
     it('responds with 401 if the username does not exist', async () => {
       const user = fixtures.fakeUser()
@@ -140,6 +129,10 @@ describe('POST /users/login', () => {
       const userDoc = pojo(await User.findById(_id))
       expect(userDoc.tokens).toEqual(tokens)
     })
+
+    afterEach('does not return an auth token', () => {
+      expect(res.headers['x-auth']).toBeUndefined()
+    })
   })
 })
 
@@ -151,7 +144,7 @@ describe('GET /users/me', () => {
   it('returns the authenticated user', async () => {
     const res = await req().expect(200)
     expect(res.body).toEqual({
-      user: pick(authenticated.user, 'username', 'balance'),
+      user: { username: authenticated.user.username },
     })
   })
 })

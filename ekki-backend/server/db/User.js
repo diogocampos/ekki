@@ -14,10 +14,6 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     match: [VALID_USERNAME, 'Username is invalid'],
   },
-  balance: {
-    type: Number,
-    default: 0,
-  },
   password: {
     type: String,
     required: [true, 'Password is required'],
@@ -88,7 +84,6 @@ UserSchema.methods.toJSON = function() {
   const user = this
   return {
     username: user.username,
-    balance: user.balance,
   }
 }
 
