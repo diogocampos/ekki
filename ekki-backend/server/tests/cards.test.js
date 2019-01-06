@@ -100,7 +100,7 @@ describe('GET /cards', () => {
     expect(res.body).toEqual({
       cards: fixtures
         .cardsOf(authenticated.user)
-        .map(card => new CreditCard(card).toJSON()),
+        .map(data => new CreditCard(data).toJSON()),
     })
   })
 })

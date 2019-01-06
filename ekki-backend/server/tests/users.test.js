@@ -73,7 +73,7 @@ describe('POST /users', () => {
       const invalidUsernames = [undefined, '', ' ', '!@#$', {}, [], null]
       await Promise.all(
         invalidUsernames.map(async username => {
-          const user = { username, password: 'password' }
+          const user = { username, password: '12345' }
           const res = await req({ user }).expect(400)
           expect(res.body).toEqual({ errors: { username: any(String) } })
         })
@@ -81,13 +81,13 @@ describe('POST /users', () => {
     })
 
     it('checks if username already exists', async () => {
-      const user = fixtures.users[0]
+      const user = { username: fixtures.users[0].username, password: '12345' }
       const res = await req({ user }).expect(400)
       expect(res.body).toEqual({ errors: { username: any(String) } })
     })
 
     it('checks if password is too short', async () => {
-      const user = { username: 'username', password: '1234' }
+      const user = { username: fixtures.fakeUsername(), password: '1234' }
       const res = await req({ user }).expect(400)
       expect(res.body).toEqual({ errors: { password: any(String) } })
     })
