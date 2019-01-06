@@ -11,6 +11,11 @@ const TransferSchema = new mongoose.Schema({
 })
 
 /**
+ * The maximum transfer amount that doesn't require password confirmation.
+ */
+TransferSchema.statics.CONFIRMATION_THRESHOLD = 1000 * 100 // IN CENTS
+
+/**
  * Returns transfers that have the given username as sender or receiver.
  */
 TransferSchema.statics.findByUsername = function(username) {

@@ -13,7 +13,7 @@ const router = express.Router()
  */
 router.post('/', authenticate, [
   wrap(async (req, res) => {
-    const { to, amount: totalAmount, cardId } = req.body.transfer
+    const { to, amount: totalAmount, cardId, password } = req.body.transfer
     const sender = res.locals.user
 
     const receiver = await User.findOne({ username: to })
@@ -23,6 +23,12 @@ router.post('/', authenticate, [
       Transfer.getBalanceForUsername(sender.username),
       Transfer.getBalanceForUsername(receiver.username),
     ])
+
+    if (totalAmount > Transfer.CONFIRMATION_THRESHOLD) {
+      // large amount: require password
+      const user = await User.findByCredentials(sender.username, password)
+      if (!user) return
+    }
 
     let amountFromBalance = totalAmount
     let amountFromCard = 0

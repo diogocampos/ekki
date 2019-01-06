@@ -123,6 +123,16 @@ exports.balanceOf = user => {
   return balances[user.username]
 }
 
+exports.withConfirmationThreshold = async (tempThreshold, fn) => {
+  const originalThreshold = Transfer.CONFIRMATION_THRESHOLD
+  Transfer.CONFIRMATION_THRESHOLD = tempThreshold
+  try {
+    await Promise.resolve(fn())
+  } finally {
+    Transfer.CONFIRMATION_THRESHOLD = originalThreshold
+  }
+}
+
 // Helpers
 
 function populator(Model, items) {

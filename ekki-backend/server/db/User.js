@@ -34,6 +34,8 @@ UserSchema.plugin(uniqueValidator, { message: 'Username already exists' })
  */
 UserSchema.statics.findByCredentials = async function(username, password) {
   const User = this
+  if (!username || !password) return null
+
   const user = await User.findOne({ username })
   if (!user) return null
 

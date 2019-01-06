@@ -51,6 +51,26 @@ describe('POST /transfers', () => {
       }
     })
 
+    specify("with a large amount and the user's password", async () => {
+      const threshold = fixtures.balanceOf(sender) - 1
+      amount = threshold + 1
+      const transfer = {
+        to: receiver.username,
+        amount,
+        password: sender.password,
+      }
+      await fixtures.withConfirmationThreshold(threshold, async () => {
+        res = await req({ transfer }).expect(200)
+      })
+
+      expected = {
+        sender: sender.username,
+        receiver: receiver.username,
+        amountFromBalance: amount,
+        amountFromCard: 0,
+      }
+    })
+
     afterEach('stores the transfer and includes info in response', async () => {
       const transferDoc = await Transfer.findById(res.body.transfer._id)
       expect(transferDoc).toMatchObject({
