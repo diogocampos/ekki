@@ -4,6 +4,7 @@ const { newAuthToken, newId, pojo } = require('./helpers')
 const Contact = require('../db/Contact')
 const CreditCard = require('../db/CreditCard')
 const User = require('../db/User')
+const Transfer = require('../db/Transfer')
 
 // User fixtures
 
@@ -85,6 +86,37 @@ exports.cardsOf = user => {
 
 exports.cardNotOf = user => {
   return cards.find(card => card._user !== user._id)
+}
+
+// Transfer fixtures
+
+const balances = {
+  [users[0].username]: 10,
+  [users[1].username]: 20,
+  [users[2].username]: 30,
+}
+
+const transfers = (exports.transfers = populator(Transfer, [
+  {
+    sender: users[0].username,
+    receiver: users[1].username,
+    amountFromBalance: 1,
+    amountFromCard: 0,
+    senderBalance: (balances[users[0].username] -= 1),
+    receiverBalance: (balances[users[1].username] += 1),
+  },
+  {
+    sender: users[2].username,
+    receiver: users[0].username,
+    amountFromBalance: 2,
+    amountFromCard: 0,
+    senderBalance: (balances[users[2].username] -= 2),
+    receiverBalance: (balances[users[0].username] += 2),
+  },
+]).reverse())
+
+exports.transfersOf = ({ username }) => {
+  return transfers.filter(t => t.sender === username || t.receiver === username)
 }
 
 // Helpers
