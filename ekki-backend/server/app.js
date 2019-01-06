@@ -3,6 +3,7 @@ const express = require('express')
 require('./config')
 require('./db/connect')
 
+const balance = require('./routes/balance')
 const cards = require('./routes/cards')
 const contacts = require('./routes/contacts')
 const transfers = require('./routes/transfers')
@@ -13,6 +14,7 @@ const app = express()
 
 app.use(express.json())
 
+app.use('/balance', balance.router)
 app.use('/cards', cards.router)
 app.use('/contacts', contacts.router)
 app.use('/transfers', transfers.router)

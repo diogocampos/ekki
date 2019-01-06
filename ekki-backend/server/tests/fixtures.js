@@ -119,6 +119,10 @@ exports.transfersOf = ({ username }) => {
   return transfers.filter(t => t.sender === username || t.receiver === username)
 }
 
+exports.balanceOf = user => {
+  return balances[user.username]
+}
+
 // Helpers
 
 function populator(Model, items) {

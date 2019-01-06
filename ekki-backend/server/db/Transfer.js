@@ -23,6 +23,18 @@ TransferSchema.statics.findByUsername = function(username) {
 }
 
 /**
+ * Returns the balance for the given username.
+ */
+TransferSchema.statics.getBalanceForUsername = async function(username) {
+  const Transfer = this
+  const [latest] = await Transfer.findByUsername(username).limit(1)
+
+  if (!latest) return 0
+  if (latest.sender === username) return latest.senderBalance
+  if (latest.receiver === username) return latest.receiverBalance
+}
+
+/**
  * Returns the properties that should be included in response bodies.
  */
 TransferSchema.methods.toJSON = function() {
