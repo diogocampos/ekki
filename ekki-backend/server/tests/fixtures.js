@@ -72,20 +72,20 @@ const fakeCard = (exports.fakeCard = () => ({
 const cards = (exports.cards = populator(CreditCard, [
   {
     ...fakeCard(),
-    _user: users[0]._id,
+    _owner: users[0]._id,
   },
   {
     ...fakeCard(),
-    _user: users[1]._id,
+    _owner: users[1]._id,
   },
 ]))
 
 exports.cardsOf = user => {
-  return cards.filter(card => card._user === user._id)
+  return cards.filter(card => card._owner === user._id)
 }
 
 exports.cardNotOf = user => {
-  return cards.find(card => card._user !== user._id)
+  return cards.find(card => card._owner !== user._id)
 }
 
 // Transfer fixtures

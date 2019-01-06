@@ -39,7 +39,7 @@ describe('POST /cards', () => {
       const cardDoc = pojo(await CreditCard.findById(res.body.card._id))
       expect(cardDoc).toMatchObject({
         ...card,
-        _user: authenticated.user._id,
+        _owner: authenticated.user._id,
       })
     })
 
