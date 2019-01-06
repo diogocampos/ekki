@@ -23,14 +23,10 @@ const users = (exports.users = populator(User, [
   fakeUser(),
 ]))
 
-function userDifferentFrom(user) {
-  return users.find(u => u.username !== user.username)
-}
-
 const authenticated = (exports.authenticated = req => {
   return (...args) => req(...args).set('X-Auth', authenticated.token)
 })
-authenticated.user = users.find(user => user.tokens.length > 0)
+authenticated.user = users[0]
 authenticated.token = authenticated.user.tokens[0]
 
 // Contact fixtures
@@ -47,14 +43,22 @@ exports.newContactFor = user => {
 
 const contacts = (exports.contacts = populator(Contact, [
   {
-    username: userDifferentFrom(authenticated.user).username,
-    _owner: authenticated.user._id,
+    _owner: users[0]._id,
+    username: users[1].username,
+  },
+  {
+    _owner: users[1]._id,
+    username: users[2].username,
   },
 ]))
 
 const contactsOf = (exports.contactsOf = user => {
   return contacts.filter(contact => contact._owner === user._id)
 })
+
+exports.contactNotOf = user => {
+  return contacts.find(contact => contact._owner !== user._id)
+}
 
 // CreditCard fixtures
 
@@ -67,11 +71,11 @@ const fakeCard = (exports.fakeCard = () => ({
 const cards = (exports.cards = populator(CreditCard, [
   {
     ...fakeCard(),
-    _user: authenticated.user._id,
+    _user: users[0]._id,
   },
   {
     ...fakeCard(),
-    _user: newId(),
+    _user: users[1]._id,
   },
 ]))
 

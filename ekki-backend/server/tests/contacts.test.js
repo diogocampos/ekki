@@ -2,7 +2,13 @@ const expect = require('expect')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { OBJECT_ID, pojo, requiresAuthentication } = require('./helpers')
+const {
+  newId,
+  OBJECT_ID,
+  pojo,
+  requiresAuthentication,
+  validatesId,
+} = require('./helpers')
 const app = require('../app')
 const Contact = require('../db/Contact')
 
@@ -77,5 +83,41 @@ describe('GET /contacts', () => {
         .contactsOf(authenticated.user)
         .map(data => new Contact(data).toJSON()),
     })
+  })
+})
+
+describe('PATCH /contacts/:id', () => {
+  const req = authenticated((id, body) =>
+    request(app)
+      .patch(`/contacts/${id}`)
+      .send(body)
+  )
+
+  requiresAuthentication(() => req(newId()))
+  validatesId(req)
+
+  it('marks or unmarks the contact as a favorite and returns it', async () => {
+    const [contact] = fixtures.contactsOf(authenticated.user)
+    const patch = { favorite: !contact.favorite }
+    const res = await req(contact._id, { patch }).expect(200)
+
+    const contactDoc = pojo(await Contact.findById(contact._id))
+    expect(contactDoc).toMatchObject({ ...contact, ...patch })
+    expect(res.body).toEqual({
+      contact: {
+        _id: contact._id,
+        username: contact.username,
+        favorite: patch.favorite,
+      },
+    })
+  })
+
+  it("does not update other users' contacts", async () => {
+    const contact = fixtures.contactNotOf(authenticated.user)
+    const patch = { favorite: !contact.favorite }
+    await req(contact._id, { patch }).expect(404, 'Not Found')
+
+    const contactDoc = pojo(await Contact.findById(contact._id))
+    expect(contactDoc).toMatchObject(contact)
   })
 })
