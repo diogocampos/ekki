@@ -25,13 +25,8 @@ router.post('/', authenticate, [
       throw new EkkiError({ to: 'Receiver must be a different user' })
     }
 
-    const latest = await Transfer.getLatestFromSender(sender.username)
-    if (
-      to === latest.receiver &&
-      totalAmount === latest.amountFromBalance + latest.amountFromCard &&
-      Date.now() - latest.createdAt.getTime() < Transfer.GRACE_PERIOD
-    ) {
-      throw new EkkiError({ amount: 'Transfer rejected as a duplicate' })
+    if (await Transfer.isDuplicate(sender, receiver, totalAmount)) {
+      throw new EkkiError({ amount: 'Transfer rejected as duplicate' })
     }
 
     const receiver = await User.findOne({ username: to })

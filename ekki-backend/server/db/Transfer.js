@@ -58,6 +58,19 @@ TransferSchema.statics.getLatestFromSender = async function(username) {
 }
 
 /**
+ * Checks if the sender has just made an identical transfer.
+ */
+TransferSchema.statics.isDuplicate = async function(sender, receiver, amount) {
+  const Transfer = this
+  const latest = await Transfer.getLatestFromSender(sender)
+  return (
+    receiver.username === latest.receiver &&
+    amount === latest.amountFromBalance + latest.amountFromCard &&
+    Date.now() - latest.createdAt.getTime() < Transfer.GRACE_PERIOD
+  )
+}
+
+/**
  * Returns the properties that should be included in response bodies.
  */
 TransferSchema.methods.toJSON = function() {
