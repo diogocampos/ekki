@@ -36,7 +36,12 @@ router.post('/', authenticate, [
     if (totalAmount > Transfer.CONFIRMATION_THRESHOLD) {
       // large amount: require password
       const user = await User.findByCredentials(sender.username, password)
-      if (!user) return
+      if (!user) {
+        const threshold = formatCurrency(Transfer.CONFIRMATION_THRESHOLD)
+        throw new EkkiError({
+          password: `Password is required for amounts above $${threshold}`,
+        })
+      }
     }
 
     let amountFromBalance = totalAmount
@@ -89,3 +94,9 @@ router.get('/', authenticate, [
 ])
 
 module.exports = { router }
+
+// Helpers
+
+function formatCurrency(cents) {
+  return (cents / 100).toFixed(2)
+}

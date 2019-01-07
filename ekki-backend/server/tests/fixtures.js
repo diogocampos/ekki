@@ -127,7 +127,7 @@ exports.withConfirmationThreshold = async (tempThreshold, fn) => {
   const originalThreshold = Transfer.CONFIRMATION_THRESHOLD
   Transfer.CONFIRMATION_THRESHOLD = tempThreshold
   try {
-    await Promise.resolve(fn())
+    return await Promise.resolve(fn())
   } finally {
     Transfer.CONFIRMATION_THRESHOLD = originalThreshold
   }

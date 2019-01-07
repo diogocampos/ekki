@@ -60,9 +60,9 @@ describe('POST /transfers', () => {
         amount,
         password: sender.password,
       }
-      await fixtures.withConfirmationThreshold(threshold, async () => {
-        res = await req({ transfer }).expect(200)
-      })
+      res = await fixtures.withConfirmationThreshold(threshold, () =>
+        req({ transfer }).expect(200)
+      )
 
       expected = {
         sender: sender.username,
@@ -142,6 +142,16 @@ describe('POST /transfers', () => {
           expect(res.body).toEqual({ errors: { cardId: any(String) } })
         })
       )
+    })
+
+    it('requires password if the amount is large', async () => {
+      const threshold = fixtures.balanceOf(sender) - 1
+      const amount = threshold + 1
+      const transfer = { to: receiver.username, amount }
+      const res = await fixtures.withConfirmationThreshold(threshold, () =>
+        req({ transfer }).expect(400)
+      )
+      expect(res.body).toEqual({ errors: { password: any(String) } })
     })
 
     afterEach('does not make a transfer', async () => {
