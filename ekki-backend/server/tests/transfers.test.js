@@ -101,6 +101,32 @@ describe('POST /transfers', () => {
       expect(newBalance).toEqual(oldBalance + amount)
     })
   })
+
+  describe('with invalid data', () => {
+    const sender = authenticated.user
+
+    it("validates the receiver's username", async () => {
+      const amount = fixtures.balanceOf(sender)
+      const badUsernames = [
+        undefined,
+        ' ',
+        fixtures.fakeUsername(),
+        sender.username,
+      ]
+      await Promise.all(
+        badUsernames.map(async username => {
+          const transfer = { to: username, amount }
+          const res = await req({ transfer }).expect(400)
+          expect(res.body).toEqual({ errors: { to: any(String) } })
+        })
+      )
+    })
+
+    afterEach('does not make a transfer', async () => {
+      const transferDocs = await Transfer.find({})
+      expect(transferDocs).toHaveLength(fixtures.transfers.length)
+    })
+  })
 })
 
 describe('GET /transfers', () => {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 /**
- * A wrapper for async route handlers, to avoid always having to include a
+ * A wrapper for `async` route handlers, to avoid always having to include a
  * try/catch block inside them.
  */
 exports.wrap = asyncHandler => {
@@ -15,7 +15,7 @@ exports.wrap = asyncHandler => {
 }
 
 /**
- * A param callback for routes with an `_id` parameter
+ * A param callback for routes with an `_id` parameter.
  * http://expressjs.com/en/4x/api.html#router.param
  */
 exports.validateId = (req, res, next, _id) => {
@@ -26,12 +26,12 @@ exports.validateId = (req, res, next, _id) => {
 }
 
 /**
- * A handler that responds with 400 Bad Request
+ * A handler that responds with 400 Bad Request.
  */
 exports.badRequest = sendStatus(400)
 
 /**
- * A handler that responds with 401 Unauthorized
+ * A handler that responds with 401 Unauthorized.
  */
 exports.unauthorized = sendStatus(401)
 
@@ -41,9 +41,19 @@ exports.unauthorized = sendStatus(401)
 const notFound = (exports.notFound = sendStatus(404))
 
 /**
- * An error handler that responds to validation errors with 400 Bad Request
+ * A custom error constructor.
+ */
+const EkkiError = (exports.EkkiError = function(errors) {
+  this.errors = errors
+})
+
+/**
+ * An error handler that responds to validation errors with 400 Bad Request.
  */
 exports.handleValidationError = (err, req, res, next) => {
+  if (err instanceof EkkiError) {
+    return res.status(400).json({ errors: err.errors })
+  }
   if (err.name === 'ValidationError') {
     const errors = {}
     for (const [path, { message }] of Object.entries(err.errors)) {

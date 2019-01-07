@@ -4,7 +4,7 @@ const { authenticate } = require('./users')
 const CreditCard = require('../db/CreditCard')
 const Transfer = require('../db/Transfer')
 const User = require('../db/User')
-const { wrap } = require('../middleware')
+const { EkkiError, wrap } = require('../middleware')
 
 const router = express.Router()
 
@@ -16,8 +16,12 @@ router.post('/', authenticate, [
     const { to, amount: totalAmount, cardId, password } = req.body.transfer
     const sender = res.locals.user
 
+    if (to === sender.username) {
+      throw new EkkiError({ to: 'Receiver must be a different user' })
+    }
+
     const receiver = await User.findOne({ username: to })
-    if (!receiver) return
+    if (!receiver) throw new EkkiError({ to: 'Receiver does not exist' })
 
     const [senderBalance, receiverBalance] = await Promise.all([
       Transfer.getBalanceForUsername(sender.username),
