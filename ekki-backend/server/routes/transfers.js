@@ -44,10 +44,18 @@ router.post('/', authenticate, [
 
     if (totalAmount > senderBalance) {
       // insufficient balance: require credit card id
-      if (!cardId) return
+      if (!cardId) {
+        throw new EkkiError({
+          cardId: 'Credit card ID is required when the balance is insufficient',
+        })
+      }
 
       const card = await CreditCard.findOne({ _id: cardId, _owner: sender._id })
-      if (!card) return
+      if (!card) {
+        throw new EkkiError({
+          cardId: 'Credit card ID must be of an existing card',
+        })
+      }
 
       amountFromBalance = senderBalance
       amountFromCard = totalAmount - amountFromBalance

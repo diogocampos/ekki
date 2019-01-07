@@ -2,7 +2,7 @@ const expect = require('expect')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { requiresAuthentication } = require('./helpers')
+const { newId, requiresAuthentication } = require('./helpers')
 const app = require('../app')
 const Transfer = require('../db/Transfer')
 
@@ -18,9 +18,10 @@ describe('POST /transfers', () => {
 
   requiresAuthentication(req)
 
+  const sender = authenticated.user
+  const receiver = fixtures.contactsOf(sender)[0]
+
   describe('with valid data', () => {
-    const sender = authenticated.user
-    const receiver = fixtures.contactsOf(sender)[0]
     let amount, res, expected
 
     specify('with enough balance', async () => {
@@ -103,8 +104,6 @@ describe('POST /transfers', () => {
   })
 
   describe('with invalid data', () => {
-    const sender = authenticated.user
-
     it("validates the receiver's username", async () => {
       const amount = fixtures.balanceOf(sender)
       const badUsernames = [
@@ -123,13 +122,24 @@ describe('POST /transfers', () => {
     })
 
     it('validates the transfer amount', async () => {
-      const receiver = fixtures.contactsOf(sender)[0]
       const badAmounts = [undefined, 0, -1, 0.5, 'foo', {}]
       await Promise.all(
         badAmounts.map(async amount => {
           const transfer = { to: receiver.username, amount }
           const res = await req({ transfer }).expect(400)
           expect(res.body).toEqual({ errors: { amount: any(String) } })
+        })
+      )
+    })
+
+    it('requires credit card if the balance is insufficient', async () => {
+      const badCardIds = [undefined, newId()]
+      await Promise.all(
+        badCardIds.map(async cardId => {
+          const amount = fixtures.balanceOf(sender) + 1
+          const transfer = { to: receiver.username, amount }
+          const res = await req({ transfer }).expect(400)
+          expect(res.body).toEqual({ errors: { cardId: any(String) } })
         })
       )
     })
