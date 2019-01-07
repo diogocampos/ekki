@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 const TransferSchema = new mongoose.Schema({
   sender: { type: String, required: true },
   receiver: { type: String, required: true },
-  amountFromBalance: { type: Number, required: true },
-  amountFromCard: { type: Number, required: true },
-  senderBalance: { type: Number, required: true },
-  receiverBalance: { type: Number, required: true },
+  amountFromBalance: { type: Number, validate: Number.isInteger },
+  amountFromCard: { type: Number, validate: Number.isInteger },
+  senderBalance: { type: Number, validate: Number.isInteger },
+  receiverBalance: { type: Number, validate: Number.isInteger },
   createdAt: { type: Date, default: Date.now },
 })
 
