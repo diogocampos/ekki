@@ -100,23 +100,35 @@ const transfers = (exports.transfers = populator(Transfer, [
   {
     sender: users[0].username,
     receiver: users[1].username,
-    amountFromBalance: 1,
+    amountFromBalance: 2,
     amountFromCard: 0,
-    senderBalance: (balances[users[0].username] -= 1),
-    receiverBalance: (balances[users[1].username] += 1),
+    senderBalance: (balances[users[0].username] -= 2),
+    receiverBalance: (balances[users[1].username] += 2),
   },
   {
     sender: users[2].username,
     receiver: users[0].username,
+    amountFromBalance: 0,
+    amountFromCard: 3,
+    senderBalance: (balances[users[2].username] -= 3),
+    receiverBalance: (balances[users[0].username] += 3),
+  },
+  {
+    sender: users[2].username,
+    receiver: users[1].username,
     amountFromBalance: 2,
-    amountFromCard: 0,
-    senderBalance: (balances[users[2].username] -= 2),
-    receiverBalance: (balances[users[0].username] += 2),
+    amountFromCard: 2,
+    senderBalance: (balances[users[2].username] -= 4),
+    receiverBalance: (balances[users[1].username] += 4),
   },
 ]).reverse())
 
 exports.transfersOf = ({ username }) => {
   return transfers.filter(t => t.sender === username || t.receiver === username)
+}
+
+exports.latestTransferFrom = user => {
+  return transfers.find(transfer => transfer.sender === user.username)
 }
 
 exports.balanceOf = user => {

@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 const TransferSchema = new mongoose.Schema({
   sender: { type: String, required: true },
   receiver: { type: String, required: true },
-  amountFromBalance: { type: Number, default: 0 },
-  amountFromCard: { type: Number, default: 0 },
+  amountFromBalance: { type: Number, required: true },
+  amountFromCard: { type: Number, required: true },
   senderBalance: { type: Number, required: true },
   receiverBalance: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
@@ -13,10 +13,16 @@ const TransferSchema = new mongoose.Schema({
 /**
  * The maximum transfer amount that doesn't require password confirmation.
  */
-TransferSchema.statics.CONFIRMATION_THRESHOLD = 1000 * 100 // IN CENTS
+TransferSchema.statics.CONFIRMATION_THRESHOLD = 1000 * 100 // in cents
 
 /**
- * Returns transfers that have the given username as sender or receiver.
+ * The amount of time to wait before accepting transfers from the same sender,
+ * with the same receiver and amount.
+ */
+TransferSchema.statics.GRACE_PERIOD = 120 * 1000 // in milliseconds
+
+/**
+ * Returns transfers that have the given username as sender OR receiver.
  */
 TransferSchema.statics.findByUsername = function(username) {
   const Transfer = this
@@ -37,6 +43,18 @@ TransferSchema.statics.getBalanceForUsername = async function(username) {
   if (!latest) return 0
   if (latest.sender === username) return latest.senderBalance
   if (latest.receiver === username) return latest.receiverBalance
+}
+
+/**
+ * Returns the latest transfer with the given username as sender.
+ */
+TransferSchema.statics.getLatestFromSender = async function(username) {
+  const Transfer = this
+  const [latest] = await Transfer.find({ sender: username }, null, {
+    sort: { createdAt: -1 },
+    limit: 1,
+  })
+  return latest
 }
 
 /**

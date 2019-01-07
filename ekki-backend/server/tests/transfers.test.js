@@ -154,6 +154,16 @@ describe('POST /transfers', () => {
       expect(res.body).toEqual({ errors: { password: any(String) } })
     })
 
+    it('rejects duplicate transfers within a short period', async () => {
+      const latest = fixtures.latestTransferFrom(sender)
+      const transfer = {
+        to: latest.receiver,
+        amount: latest.amountFromBalance + latest.amountFromCard,
+      }
+      const res = await req({ transfer }).expect(400)
+      expect(res.body).toEqual({ errors: { amount: any(String) } })
+    })
+
     afterEach('does not make a transfer', async () => {
       const transferDocs = await Transfer.find({})
       expect(transferDocs).toHaveLength(fixtures.transfers.length)
