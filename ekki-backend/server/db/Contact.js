@@ -16,6 +16,18 @@ const ContactSchema = new mongoose.Schema({
 })
 
 /**
+ * Applies the patch to the contact that matches the conditions.
+ */
+ContactSchema.statics.patchOne = function(conditions, patch) {
+  const Contact = this
+  return Contact.findOneAndUpdate(
+    conditions,
+    { $set: patch },
+    { new: true } // return the modified version, not the previous one
+  )
+}
+
+/**
  * Returns the properties that should be included in response bodies.
  */
 ContactSchema.methods.toJSON = function() {

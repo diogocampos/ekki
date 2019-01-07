@@ -17,8 +17,6 @@ router.post('/', authenticate, [
     const { user } = res.locals
     const { username } = req.body.contact
 
-    // TODO use a compound unique index for (_owner, username) ?
-
     const [targetUser, existingContact] = await Promise.all([
       User.findOne({ username }),
       Contact.findOne({ _owner: user._id, username }),
@@ -52,10 +50,9 @@ router.patch('/:_id', authenticate, [
     const { user } = res.locals
     const { favorite } = req.body.patch || {}
 
-    const contact = await Contact.findOneAndUpdate(
+    const contact = await Contact.patchOne(
       { _id, _owner: user._id },
-      { $set: { favorite: !!favorite } },
-      { new: true } // return the modified version, not the previous one
+      { favorite: !!favorite }
     )
     contact ? res.json({ contact }) : notFound(req, res)
   }),
