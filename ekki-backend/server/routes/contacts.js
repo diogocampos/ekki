@@ -15,7 +15,9 @@ router.param('_id', validateId)
 router.post('/', authenticate, [
   wrap(async (req, res) => {
     const { user } = res.locals
-    const { username } = req.body.contact
+    const { username } = req.body.contact || {}
+
+    // TODO: Use a unique compound index for (_owner, username) ?
 
     const [targetUser, existingContact] = await Promise.all([
       User.findOne({ username }),

@@ -6,6 +6,7 @@ const {
   newId,
   OBJECT_ID,
   pojo,
+  rejectsEmptyRequestBody,
   requiresAuthentication,
   validatesId,
 } = require('./helpers')
@@ -26,6 +27,7 @@ describe('POST /cards', () => {
 
   beforeEach(fixtures.cards.populate)
   requiresAuthentication(req)
+  rejectsEmptyRequestBody(req)
 
   describe('with valid data', () => {
     let card, res

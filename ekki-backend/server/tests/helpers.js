@@ -1,3 +1,4 @@
+const expect = require('expect')
 const jwt = require('jsonwebtoken')
 const { ObjectId } = require('mongoose').Types
 
@@ -21,14 +22,14 @@ const newId = (exports.newId = () => {
 })
 
 /**
- * Converts a MongoDB document into a Plain Old JavaScript Object
+ * Converts a MongoDB document into a Plain Old JavaScript Object.
  */
 exports.pojo = mongoDoc => {
   return JSON.parse(JSON.stringify(mongoDoc.toObject()))
 }
 
 /**
- * Generates a test that checks if an endpoint rejects unauthenticated requests
+ * Generates a test that checks if an endpoint rejects unauthenticated requests.
  */
 exports.requiresAuthentication = req => {
   it('requires authentication', async () => {
@@ -48,7 +49,7 @@ exports.requiresAuthentication = req => {
 }
 
 /**
- * Generates a test that checks if an endpoint ignores invalid `ObjectId`s
+ * Generates a test that checks if an endpoint ignores invalid `ObjectId`s.
  */
 exports.validatesId = requestById => {
   it('validates `id` parameter', async () => {
@@ -58,6 +59,21 @@ exports.validatesId = requestById => {
     ]
     await Promise.all(
       badIds.map(id => requestById(id).expect(404, 'Not Found'))
+    )
+  })
+}
+
+/**
+ * Generates a test that checks if an endpoint rejects requests with empty body.
+ */
+exports.rejectsEmptyRequestBody = requestWithBody => {
+  it('responds with 400 if the request has no body', async () => {
+    const emptyBodies = [undefined, null, '', 0, false, {}]
+    await Promise.all(
+      emptyBodies.map(async body => {
+        const res = await requestWithBody(body)
+        expect([400, 401, 404]).toContain(res.status)
+      })
     )
   })
 }

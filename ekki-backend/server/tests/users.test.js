@@ -3,7 +3,11 @@ const { pick } = require('lodash')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { pojo, requiresAuthentication } = require('./helpers')
+const {
+  pojo,
+  rejectsEmptyRequestBody,
+  requiresAuthentication,
+} = require('./helpers')
 const app = require('../app')
 const User = require('../db/User')
 
@@ -20,6 +24,7 @@ describe('POST /users', () => {
       .send(body)
 
   beforeEach(fixtures.users.populate)
+  rejectsEmptyRequestBody(req)
 
   describe('with valid data', () => {
     let user, res, userDoc
@@ -96,6 +101,7 @@ describe('POST /users/login', () => {
       .send(body)
 
   beforeEach(fixtures.users.populate)
+  rejectsEmptyRequestBody(req)
 
   describe('with valid credentials', async () => {
     let user, res, token, userDoc

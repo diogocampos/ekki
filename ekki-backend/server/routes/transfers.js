@@ -13,7 +13,7 @@ const router = express.Router()
  */
 router.post('/', authenticate, [
   wrap(async (req, res) => {
-    const { to, amount, cardId, password } = req.body.transfer
+    const { to, amount, cardId, password } = req.body.transfer || {}
     const sender = res.locals.user
 
     // Validate amount

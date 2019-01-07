@@ -6,6 +6,7 @@ const {
   newId,
   OBJECT_ID,
   pojo,
+  rejectsEmptyRequestBody,
   requiresAuthentication,
   validatesId,
 } = require('./helpers')
@@ -24,6 +25,7 @@ describe('POST /contacts', () => {
 
   beforeEach(fixtures.contacts.populate)
   requiresAuthentication(req)
+  rejectsEmptyRequestBody(req)
 
   describe('with valid data', () => {
     let contact, res
@@ -96,6 +98,7 @@ describe('PATCH /contacts/:id', () => {
   beforeEach(fixtures.contacts.populate)
   requiresAuthentication(() => req(newId(), {}))
   validatesId(req)
+  rejectsEmptyRequestBody(body => req(newId(), body))
 
   it('marks or unmarks the contact as a favorite and returns it', async () => {
     const [contact] = fixtures.contactsOf(authenticated.user)

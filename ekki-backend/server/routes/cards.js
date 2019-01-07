@@ -18,6 +18,9 @@ router.post('/', authenticate, [
       _owner: res.locals.user._id,
       ...pick(req.body.card, 'number', 'expiry', 'holder'),
     }
+
+    // TODO: Validate card with issuer?
+
     const card = await new CreditCard(data).save()
     res.json({ card })
   }),

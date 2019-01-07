@@ -2,7 +2,11 @@ const expect = require('expect')
 const request = require('supertest')
 
 const fixtures = require('./fixtures')
-const { newId, requiresAuthentication } = require('./helpers')
+const {
+  newId,
+  rejectsEmptyRequestBody,
+  requiresAuthentication,
+} = require('./helpers')
 const app = require('../app')
 const Transfer = require('../db/Transfer')
 
@@ -18,6 +22,7 @@ describe('POST /transfers', () => {
 
   beforeEach(fixtures.transfers.populate)
   requiresAuthentication(req)
+  rejectsEmptyRequestBody(req)
 
   const sender = authenticated.user
   const receiver = fixtures.contactsOf(sender)[0]

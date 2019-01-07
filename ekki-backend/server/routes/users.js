@@ -23,7 +23,7 @@ const authenticate = wrap(async (req, res, next) => {
  */
 router.post('/', [
   wrap(async (req, res) => {
-    const { username, password } = req.body.user
+    const { username, password } = req.body.user || {}
     const user = await new User({ username, password }).save()
     const token = await user.generateAuthToken()
     res.header('X-Auth', token).json({ user })
@@ -35,7 +35,7 @@ router.post('/', [
  */
 router.post('/login', [
   wrap(async (req, res) => {
-    const { username, password } = req.body.user
+    const { username, password } = req.body.user || {}
     const user = await User.findByCredentials(username, password)
     if (!user) return unauthorized(req, res)
 
