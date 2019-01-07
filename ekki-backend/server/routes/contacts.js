@@ -24,6 +24,7 @@ router.post('/', authenticate, [
       Contact.findOne({ _owner: user._id, username }),
     ])
     if (!targetUser) return notFound(req, res)
+    if (targetUser.username === user.username) return badRequest(req, res)
     if (existingContact) return badRequest(req, res)
 
     const data = { _owner: user._id, username: targetUser.username }
