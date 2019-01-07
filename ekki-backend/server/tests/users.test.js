@@ -39,9 +39,7 @@ describe('POST /users', () => {
     })
 
     it('generates an auth token', async () => {
-      expect(userDoc).toMatchObject({
-        tokens: [stringMatching(JSON_WEB_TOKEN)],
-      })
+      expect(userDoc.tokens).toEqual([stringMatching(JSON_WEB_TOKEN)])
     })
 
     it('includes user info in response body', () => {
@@ -57,7 +55,12 @@ describe('POST /users', () => {
 
   describe('with invalid data', () => {
     it('checks if username is invalid', async () => {
-      const invalidUsernames = [undefined, '', ' ', '!@#$', {}, [], null]
+      const invalidUsernames = [
+        undefined,
+        ' ',
+        '!@#$',
+        'looooooooooooooooooooooong',
+      ]
       await Promise.all(
         invalidUsernames.map(async username => {
           const user = { username, password: '12345' }

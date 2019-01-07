@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
+const MAX_USERNAME_LENGTH = 25
 const VALID_USERNAME = /^[a-z\d]+([_.][a-z\d]+)*$/
 
 const UserSchema = new mongoose.Schema({
@@ -11,6 +12,7 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Username is required'],
     trim: true,
     lowercase: true,
+    maxlength: MAX_USERNAME_LENGTH,
     unique: true,
     match: [VALID_USERNAME, 'Username is invalid'],
   },
