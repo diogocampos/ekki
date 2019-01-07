@@ -13,8 +13,13 @@ const router = express.Router()
  */
 router.post('/', authenticate, [
   wrap(async (req, res) => {
-    const { to, amount: totalAmount, cardId, password } = req.body.transfer
+    const { to, amount, cardId, password } = req.body.transfer
     const sender = res.locals.user
+
+    const totalAmount = +amount
+    if (totalAmount <= 0 || !Number.isInteger(totalAmount)) {
+      throw new EkkiError({ amount: 'Amount must be a positive integer' })
+    }
 
     if (to === sender.username) {
       throw new EkkiError({ to: 'Receiver must be a different user' })

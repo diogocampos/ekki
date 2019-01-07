@@ -122,6 +122,18 @@ describe('POST /transfers', () => {
       )
     })
 
+    it('validates the transfer amount', async () => {
+      const receiver = fixtures.contactsOf(sender)[0]
+      const badAmounts = [undefined, 0, -1, 0.5, 'foo', {}]
+      await Promise.all(
+        badAmounts.map(async amount => {
+          const transfer = { to: receiver.username, amount }
+          const res = await req({ transfer }).expect(400)
+          expect(res.body).toEqual({ errors: { amount: any(String) } })
+        })
+      )
+    })
+
     afterEach('does not make a transfer', async () => {
       const transferDocs = await Transfer.find({})
       expect(transferDocs).toHaveLength(fixtures.transfers.length)
