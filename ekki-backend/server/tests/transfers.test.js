@@ -93,13 +93,13 @@ describe('POST /transfers', () => {
 
     afterEach("updates the sender's balance", async () => {
       const oldBalance = fixtures.balanceOf(sender)
-      const newBalance = await Transfer.getBalanceForUsername(sender.username)
+      const newBalance = await Transfer.getBalanceForUser(sender)
       expect(newBalance).toEqual(oldBalance - Math.min(amount, oldBalance))
     })
 
     afterEach("updates the receiver's balance", async () => {
       const oldBalance = fixtures.balanceOf(receiver)
-      const newBalance = await Transfer.getBalanceForUsername(receiver.username)
+      const newBalance = await Transfer.getBalanceForUser(receiver)
       expect(newBalance).toEqual(oldBalance + amount)
     })
   })
@@ -111,7 +111,7 @@ describe('POST /transfers', () => {
         undefined,
         ' ',
         fixtures.fakeUsername(),
-        sender.username,
+        sender.username.toUpperCase(),
       ]
       await Promise.all(
         badUsernames.map(async username => {
@@ -138,7 +138,7 @@ describe('POST /transfers', () => {
       await Promise.all(
         badCardIds.map(async cardId => {
           const amount = fixtures.balanceOf(sender) + 1
-          const transfer = { to: receiver.username, amount }
+          const transfer = { to: receiver.username, amount, cardId }
           const res = await req({ transfer }).expect(400)
           expect(res.body).toEqual({ errors: { cardId: any(String) } })
         })

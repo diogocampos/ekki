@@ -16,54 +16,55 @@ router.post('/', authenticate, [
     const { to, amount, cardId, password } = req.body.transfer
     const sender = res.locals.user
 
+    // Validate amount
+
     const totalAmount = +amount
     if (totalAmount <= 0 || !Number.isInteger(totalAmount)) {
       throw new EkkiError({ amount: 'Amount must be a positive integer' })
     }
 
-    if (to === sender.username) {
+    // Validate receiver
+
+    const receiver = await User.findOne({ username: to })
+    if (!receiver) throw new EkkiError({ to: 'Receiver does not exist' })
+
+    if (receiver.username === sender.username) {
       throw new EkkiError({ to: 'Receiver must be a different user' })
     }
+
+    // Check for duplicate transfers
 
     if (await Transfer.isDuplicate(sender, receiver, totalAmount)) {
       throw new EkkiError({ amount: 'Transfer rejected as duplicate' })
     }
 
-    const receiver = await User.findOne({ username: to })
-    if (!receiver) throw new EkkiError({ to: 'Receiver does not exist' })
-
-    const [senderBalance, receiverBalance] = await Promise.all([
-      Transfer.getBalanceForUsername(sender.username),
-      Transfer.getBalanceForUsername(receiver.username),
-    ])
+    // Check if amount is larger than the threshold
 
     if (totalAmount > Transfer.CONFIRMATION_THRESHOLD) {
       // large amount: require password
       const user = await User.findByCredentials(sender.username, password)
       if (!user) {
-        const threshold = formatCurrency(Transfer.CONFIRMATION_THRESHOLD)
         throw new EkkiError({
-          password: `Password is required for amounts above $${threshold}`,
+          password: 'Password is required for large amounts',
         })
       }
     }
 
+    // Check if amount is larger than the sender's balance
+
+    const senderBalance = await Transfer.getBalanceForUser(sender)
     let amountFromBalance = totalAmount
     let amountFromCard = 0
 
     if (totalAmount > senderBalance) {
       // insufficient balance: require credit card id
       if (!cardId) {
-        throw new EkkiError({
-          cardId: 'Credit card ID is required when the balance is insufficient',
-        })
+        throw new EkkiError({ cardId: 'Credit card ID is required' })
       }
 
       const card = await CreditCard.findOne({ _id: cardId, _owner: sender._id })
       if (!card) {
-        throw new EkkiError({
-          cardId: 'Credit card ID must be of an existing card',
-        })
+        throw new EkkiError({ cardId: 'Credit card ID must be valid' })
       }
 
       amountFromBalance = senderBalance
@@ -72,16 +73,14 @@ router.post('/', authenticate, [
       // TODO: Charge the card!
     }
 
-    const data = {
-      sender: sender.username,
-      receiver: receiver.username,
+    // Make the transfer
+
+    const transfer = await Transfer.doIt({
+      sender,
+      receiver,
       amountFromBalance,
       amountFromCard,
-      senderBalance: senderBalance - amountFromBalance,
-      receiverBalance: receiverBalance + totalAmount,
-    }
-
-    const transfer = await new Transfer(data).save()
+    })
     res.json({ transfer })
   }),
 ])
@@ -92,15 +91,9 @@ router.post('/', authenticate, [
 router.get('/', authenticate, [
   wrap(async (req, res) => {
     const { user } = res.locals
-    const transfers = await Transfer.findByUsername(user.username)
+    const transfers = await Transfer.findByUser(user)
     res.json({ transfers })
   }),
 ])
 
 module.exports = { router }
-
-// Helpers
-
-function formatCurrency(cents) {
-  return (cents / 100).toFixed(2)
-}

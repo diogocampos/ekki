@@ -22,9 +22,9 @@ TransferSchema.statics.CONFIRMATION_THRESHOLD = 1000 * 100 // in cents
 TransferSchema.statics.GRACE_PERIOD = 120 * 1000 // in milliseconds
 
 /**
- * Returns transfers that have the given username as sender OR receiver.
+ * Returns transfers that have the given user as sender OR receiver.
  */
-TransferSchema.statics.findByUsername = function(username) {
+TransferSchema.statics.findByUser = function({ username }) {
   const Transfer = this
   return Transfer.find(
     { $or: [{ sender: username }, { receiver: username }] },
@@ -34,27 +34,27 @@ TransferSchema.statics.findByUsername = function(username) {
 }
 
 /**
- * Returns the balance for the given username.
+ * Returns the latest transfer with the given user as sender.
  */
-TransferSchema.statics.getBalanceForUsername = async function(username) {
-  const Transfer = this
-  const [latest] = await Transfer.findByUsername(username).limit(1)
-
-  if (!latest) return 0
-  if (latest.sender === username) return latest.senderBalance
-  if (latest.receiver === username) return latest.receiverBalance
-}
-
-/**
- * Returns the latest transfer with the given username as sender.
- */
-TransferSchema.statics.getLatestFromSender = async function(username) {
+TransferSchema.statics.getLatestFromSender = async function({ username }) {
   const Transfer = this
   const [latest] = await Transfer.find({ sender: username }, null, {
     sort: { createdAt: -1 },
     limit: 1,
   })
   return latest
+}
+
+/**
+ * Returns the balance for the given user.
+ */
+TransferSchema.statics.getBalanceForUser = async function(user) {
+  const Transfer = this
+  const [latest] = await Transfer.findByUser(user).limit(1)
+
+  if (!latest) return 0
+  if (latest.sender === user.username) return latest.senderBalance
+  if (latest.receiver === user.username) return latest.receiverBalance
 }
 
 /**
@@ -68,6 +68,31 @@ TransferSchema.statics.isDuplicate = async function(sender, receiver, amount) {
     amount === latest.amountFromBalance + latest.amountFromCard &&
     Date.now() - latest.createdAt.getTime() < Transfer.GRACE_PERIOD
   )
+}
+
+/**
+ * Makes a transfer.
+ * TODO: This should be an atomic transaction.
+ */
+TransferSchema.statics.doIt = async function({
+  sender,
+  receiver,
+  amountFromBalance,
+  amountFromCard,
+}) {
+  const Transfer = this
+  const [senderBalance, receiverBalance] = await Promise.all([
+    Transfer.getBalanceForUser(sender),
+    Transfer.getBalanceForUser(receiver),
+  ])
+  return new Transfer({
+    sender: sender.username,
+    receiver: receiver.username,
+    amountFromBalance,
+    amountFromCard,
+    senderBalance: senderBalance - amountFromBalance,
+    receiverBalance: receiverBalance + amountFromBalance + amountFromCard,
+  }).save()
 }
 
 /**

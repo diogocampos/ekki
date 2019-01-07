@@ -12,7 +12,7 @@ const router = express.Router()
 router.get('/', authenticate, [
   wrap(async (req, res) => {
     const { user } = res.locals
-    const balance = await Transfer.getBalanceForUsername(user.username)
+    const balance = await Transfer.getBalanceForUser(user)
     res.json({ balance })
   }),
 ])
