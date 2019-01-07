@@ -16,6 +16,7 @@ describe('POST /transfers', () => {
       .send(body)
   )
 
+  beforeEach(fixtures.transfers.populate)
   requiresAuthentication(req)
 
   const sender = authenticated.user
@@ -174,6 +175,7 @@ describe('POST /transfers', () => {
 describe('GET /transfers', () => {
   const req = authenticated(() => request(app).get('/transfers'))
 
+  beforeEach(fixtures.transfers.populate)
   requiresAuthentication(req)
 
   it("returns the user's history of sent and received transfers", async () => {

@@ -7,11 +7,11 @@ const app = require('../app')
 
 const { authenticated } = fixtures
 
-beforeEach(fixtures.transfers.populate)
-
 describe('GET /balance', () => {
   const req = authenticated(() => request(app).get('/balance'))
 
+  beforeEach(fixtures.transfers.populate)
+  beforeEach(fixtures.users.populate)
   requiresAuthentication(req)
 
   it("returns the user's current balance", async () => {

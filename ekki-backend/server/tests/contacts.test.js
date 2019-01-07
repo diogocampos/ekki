@@ -15,8 +15,6 @@ const Contact = require('../db/Contact')
 const { objectContaining, stringMatching } = expect
 const { authenticated } = fixtures
 
-beforeEach(fixtures.contacts.populate)
-
 describe('POST /contacts', () => {
   const req = authenticated(body =>
     request(app)
@@ -24,6 +22,7 @@ describe('POST /contacts', () => {
       .send(body)
   )
 
+  beforeEach(fixtures.contacts.populate)
   requiresAuthentication(req)
 
   describe('with valid data', () => {
@@ -74,6 +73,7 @@ describe('POST /contacts', () => {
 describe('GET /contacts', () => {
   const req = authenticated(() => request(app).get('/contacts'))
 
+  beforeEach(fixtures.contacts.populate)
   requiresAuthentication(req)
 
   it("returns the user's contacts", async () => {
@@ -93,6 +93,7 @@ describe('PATCH /contacts/:id', () => {
       .send(body)
   )
 
+  beforeEach(fixtures.contacts.populate)
   requiresAuthentication(() => req(newId(), {}))
   validatesId(req)
 
@@ -125,6 +126,7 @@ describe('PATCH /contacts/:id', () => {
 describe('DELETE /contacts/:id', () => {
   const req = authenticated(id => request(app).delete(`/contacts/${id}`))
 
+  beforeEach(fixtures.contacts.populate)
   requiresAuthentication(() => req(newId()))
   validatesId(req)
 

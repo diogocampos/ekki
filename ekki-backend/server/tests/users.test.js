@@ -13,13 +13,13 @@ const { authenticated } = fixtures
 const BCRYPT_HASH = /^\$2a\$.{56}$/
 const JSON_WEB_TOKEN = /^eyJ/
 
-beforeEach(fixtures.users.populate)
-
 describe('POST /users', () => {
   const req = body =>
     request(app)
       .post('/users')
       .send(body)
+
+  beforeEach(fixtures.users.populate)
 
   describe('with valid data', () => {
     let user, res, userDoc
@@ -92,6 +92,8 @@ describe('POST /users/login', () => {
       .post('/users/login')
       .send(body)
 
+  beforeEach(fixtures.users.populate)
+
   describe('with valid credentials', async () => {
     let user, res, token, userDoc
     beforeEach(async () => {
@@ -139,6 +141,7 @@ describe('POST /users/login', () => {
 describe('GET /users/me', () => {
   const req = authenticated(() => request(app).get('/users/me'))
 
+  beforeEach(fixtures.users.populate)
   requiresAuthentication(req)
 
   it('returns the authenticated user', async () => {
@@ -152,6 +155,7 @@ describe('GET /users/me', () => {
 describe('DELETE /users/me/token', () => {
   const req = authenticated(() => request(app).delete('/users/me/token'))
 
+  beforeEach(fixtures.users.populate)
   requiresAuthentication(req)
 
   it('deletes the auth token', async () => {

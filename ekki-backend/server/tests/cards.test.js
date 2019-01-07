@@ -17,8 +17,6 @@ const { authenticated } = fixtures
 
 const MASKED_CREDIT_CARD_NUMBER = /^[*]+\d{4}$/
 
-beforeEach(fixtures.cards.populate)
-
 describe('POST /cards', () => {
   const req = authenticated(body =>
     request(app)
@@ -26,6 +24,7 @@ describe('POST /cards', () => {
       .send(body)
   )
 
+  beforeEach(fixtures.cards.populate)
   requiresAuthentication(req)
 
   describe('with valid data', () => {
@@ -93,6 +92,7 @@ describe('POST /cards', () => {
 describe('GET /cards', () => {
   const req = authenticated(() => request(app).get('/cards'))
 
+  beforeEach(fixtures.cards.populate)
   requiresAuthentication(req)
 
   it("returns the user's credit cards", async () => {
@@ -108,6 +108,7 @@ describe('GET /cards', () => {
 describe('DELETE /cards/:id', () => {
   const req = authenticated(id => request(app).delete(`/cards/${id}`))
 
+  beforeEach(fixtures.cards.populate)
   requiresAuthentication(() => req(newId()))
   validatesId(req)
 
