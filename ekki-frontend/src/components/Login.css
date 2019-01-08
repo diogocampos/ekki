@@ -1,0 +1,35 @@
+.Login {
+  min-height: 100vh;
+  background-color: var(--theme-color);
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.Login-header {
+  margin: 0 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Login-form {
+  margin-top: 50px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Login-logo {
+  margin: 10px;
+  font-style: italic;
+}
+
+.Login .Button {
+  background-color: white;
+  color: var(--theme-color);
+}

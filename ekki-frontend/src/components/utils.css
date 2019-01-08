@@ -1,0 +1,22 @@
+.Button {
+  opacity: 0.9;
+  margin: 10px;
+  border: 1px solid var(--theme-color);
+  border-radius: var(--border-radius);
+  padding: 0.5em 1em;
+
+  font-size: inherit;
+}
+
+.Button:hover:not(:active) {
+  opacity: 1;
+}
+
+.Input {
+  margin: 5px 10px;
+  border: 1px solid var(--theme-color);
+  border-radius: var(--border-radius);
+  padding: 0.5em 1em;
+
+  font-size: inherit;
+}
