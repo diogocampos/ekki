@@ -4,7 +4,7 @@ const randomSecret = () => Math.random().toString(26).slice(2) //prettier-ignore
 
 const env = {
   development: {
-    PORT: process.env.PORT || 3000,
+    PORT: process.env.PORT || 3001,
     MONGODB_URI: localMongoDB,
     JWT_SECRET: randomSecret(),
   },
