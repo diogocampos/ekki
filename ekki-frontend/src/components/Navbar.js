@@ -13,10 +13,9 @@ class Navbar extends React.Component {
     return (
       <nav className="navbar">
         <div className="container">
-          <NavbarBrand
-            active={isMenuOpen}
-            onToggleMenu={this.handleToggleMenu}
-          />
+          <NavbarBrand active={isMenuOpen} onToggleMenu={this.handleToggleMenu}>
+            <h1 className="title is-italic">Ekki</h1>
+          </NavbarBrand>
           <NavbarMenu active={isMenuOpen}>{this.props.children}</NavbarMenu>
         </div>
       </nav>
@@ -28,9 +27,7 @@ function NavbarBrand(props) {
   const { active, onToggleMenu } = props
   return (
     <div className="navbar-brand">
-      <div className="navbar-item">
-        <h1 className="title is-italic">Ekki</h1>
-      </div>
+      <div className="navbar-item">{props.children}</div>
       <span
         className={classNames('navbar-burger burger', active && 'is-active')}
         onClick={onToggleMenu}
