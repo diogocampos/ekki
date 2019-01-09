@@ -1,4 +1,6 @@
+const cors = require('cors')
 const express = require('express')
+const morgan = require('morgan')
 
 require('./config')
 require('./db/connect')
@@ -12,6 +14,9 @@ const { wrap, ...middleware } = require('./middleware')
 
 const app = express()
 
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
+
+app.use(cors({ exposedHeaders: 'X-Auth' }))
 app.use(express.json())
 
 app.use('/balance', balance.router)
