@@ -11,16 +11,22 @@ class Navbar extends React.Component {
   render() {
     const { isMenuOpen } = this.state
     return (
-      <nav className="navbar">
-        <div className="container">
-          <NavbarBrand active={isMenuOpen} onToggleMenu={this.handleToggleMenu}>
-            <h1 className="title is-italic">Ekki</h1>
-          </NavbarBrand>
-          <NavbarMenu active={isMenuOpen}>{this.props.children}</NavbarMenu>
-        </div>
-      </nav>
+      <NavbarContainer>
+        <NavbarBrand active={isMenuOpen} onToggleMenu={this.handleToggleMenu}>
+          <h1 className="title is-italic">Ekki</h1>
+        </NavbarBrand>
+        <NavbarMenu active={isMenuOpen}>{this.props.children}</NavbarMenu>
+      </NavbarContainer>
     )
   }
+}
+
+function NavbarContainer(props) {
+  return (
+    <nav className="navbar">
+      <div className="container">{props.children}</div>
+    </nav>
+  )
 }
 
 function NavbarBrand(props) {
@@ -44,7 +50,7 @@ function NavbarMenu(props) {
   const { active } = props
   return (
     <div className={classNames('navbar-menu', active && 'is-active')}>
-      <div className="navbar-end">
+      <div className="navbar-end has-text-right">
         {React.Children.map(props.children, child =>
           React.cloneElement(child, {
             className: classNames('navbar-item', child.props.classNames),
