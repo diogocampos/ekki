@@ -1,9 +1,45 @@
 import React from 'react'
+import { connect } from 'react-redux'
 
 import Login from './Login'
+import Main from './Main'
+import { actions } from '../state'
 
-function App() {
-  return <Login />
+class App extends React.Component {
+  componentDidMount() {
+    this.props.getUser()
+  }
+
+  render() {
+    const { auth } = this.props
+    if (auth.isFetching) return <Loading />
+    return auth.user ? <Main /> : <Login />
+  }
 }
 
-export default App
+function Loading() {
+  return (
+    <div className="hero is-fullheight">
+      <div className="hero-body">
+        <div className="container has-text-centered">
+          <button type="button" className="button is-loading is-white is-large">
+            Loading…
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+})
+
+const mapDispatchToProps = {
+  getUser: actions.getUser,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App)

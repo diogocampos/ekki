@@ -1,8 +1,10 @@
 import React from 'react'
+import { connect } from 'react-redux'
 
 import Form from './Form'
 import Navbar, { NavbarItem } from './Navbar'
 import { Button, Field, Title } from './utils'
+import { actions } from '../state'
 
 const LOGIN = 'Log in'
 const SIGNUP = 'Sign up'
@@ -18,9 +20,10 @@ class Login extends React.Component {
     }))
   }
 
-  handleSubmit = values => {
-    // TODO submit to API server
-    console.log(values)
+  handleSubmit = formData => {
+    const { logIn, signUp } = this.props
+    const action = this.state.mode === LOGIN ? logIn : signUp
+    action(formData)
   }
 
   render() {
@@ -80,4 +83,12 @@ function LoginBody(props) {
   )
 }
 
-export default Login
+const mapDispatchToProps = {
+  logIn: actions.logIn,
+  signUp: actions.signUp,
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Login)
