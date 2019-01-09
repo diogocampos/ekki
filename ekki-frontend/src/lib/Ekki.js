@@ -13,13 +13,12 @@ export function hasToken() {
 }
 
 async function ekki(method, path, body) {
-  const options = {
-    method,
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
-  }
+  const options = { method, mode: 'cors', headers: {} }
   if (auth.token) options.headers['X-Auth'] = auth.token
-  if (body) options.body = JSON.stringify(body)
+  if (body) {
+    options.headers['Content-Type'] = 'application/json'
+    options.body = JSON.stringify(body)
+  }
 
   const response = await fetch(URL + path, options)
   if (response.status === 401) setToken(null) // Unauthorized
@@ -29,7 +28,7 @@ async function ekki(method, path, body) {
   } catch {
     result = {}
   }
-  if (!response.ok) throw new ApiError(result, response.status)
+  if (!response.ok) throw new ApiError(result.errors, response.status)
 
   const token = response.headers.get('X-Auth')
   if (token) setToken(token)
@@ -38,8 +37,8 @@ async function ekki(method, path, body) {
 }
 
 export class ApiError {
-  constructor(body, status) {
-    this.errors = body.errors
+  constructor(errors, status) {
+    this.errors = errors
     this.status = status
   }
 }

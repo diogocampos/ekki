@@ -10,24 +10,21 @@ const LOGIN = 'Log in'
 const SIGNUP = 'Sign up'
 
 class Login extends React.Component {
-  state = {
-    mode: LOGIN,
-  }
+  state = { mode: LOGIN }
 
   handleSwitchMode = () => {
-    this.setState(state => ({
-      mode: state.mode === LOGIN ? SIGNUP : LOGIN,
-    }))
+    this.setState(state => ({ mode: state.mode === LOGIN ? SIGNUP : LOGIN }))
   }
 
   handleSubmit = formData => {
-    const { logIn, signUp } = this.props
-    const action = this.state.mode === LOGIN ? logIn : signUp
+    const { onLogIn, onSignUp } = this.props
+    const action = this.state.mode === LOGIN ? onLogIn : onSignUp
     action(formData)
   }
 
   render() {
     const { mode } = this.state
+    const { errors } = this.props
     return (
       <LoginContainer>
         <LoginHeader>
@@ -40,13 +37,23 @@ class Login extends React.Component {
         <LoginBody>
           <Title>{mode === LOGIN ? LOGIN : SIGNUP}</Title>
           <Form onSubmit={this.handleSubmit}>
-            <Field name="username" placeholder="Username" />
-            <Field name="password" type="password" placeholder="Password" />
+            <Field
+              name="username"
+              placeholder="Username"
+              errorMessage={errors.username}
+            />
+            <Field
+              name="password"
+              type="password"
+              placeholder="Password"
+              errorMessage={errors.password}
+            />
             {mode === SIGNUP && (
               <Field
                 name="confirm"
                 type="password"
                 placeholder="Confirm password"
+                errorMessage={errors.confirm}
               />
             )}
             <Button className="is-inverted is-outlined" type="submit">
@@ -83,12 +90,16 @@ function LoginBody(props) {
   )
 }
 
+const mapStateToProps = state => ({
+  errors: state.auth.errors || {},
+})
+
 const mapDispatchToProps = {
-  logIn: actions.logIn,
-  signUp: actions.signUp,
+  onLogIn: actions.logIn,
+  onSignUp: actions.signUp,
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Login)

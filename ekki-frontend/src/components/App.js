@@ -7,7 +7,7 @@ import { actions } from '../state'
 
 class App extends React.Component {
   componentDidMount() {
-    this.props.getUser()
+    this.props.onMount()
   }
 
   render() {
@@ -36,7 +36,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  getUser: actions.getUser,
+  onMount: actions.getUser,
 }
 
 export default connect(

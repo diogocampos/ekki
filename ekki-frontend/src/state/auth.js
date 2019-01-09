@@ -10,13 +10,12 @@ export const logOut = call(Ekki.logOut)
 function call(apiMethod, { if: condition } = {}) {
   return formData => async dispatch => {
     if (condition && !condition()) return
-
     dispatch(authRequest())
     try {
       const { user } = await apiMethod(formData)
       dispatch(authSuccess(user))
     } catch (err) {
-      dispatch(authFailure())
+      dispatch(authFailure(err.errors))
     }
   }
 }
@@ -27,25 +26,38 @@ const AUTH_FAILURE = 'auth/failure'
 
 const authRequest = () => ({ type: AUTH_REQUEST })
 const authSuccess = user => ({ type: AUTH_SUCCESS, user })
-const authFailure = () => ({ type: AUTH_FAILURE })
+const authFailure = errors => ({ type: AUTH_FAILURE, errors })
 
 // Reducer
 
 const defaultState = {
   isFetching: Ekki.hasToken(),
   user: null,
+  errors: null,
 }
 
 export default function auth(state = defaultState, action) {
   switch (action.type) {
     case AUTH_REQUEST:
-      return { ...state, isFetching: true }
+      return {
+        ...state,
+        isFetching: true,
+        errors: null,
+      }
 
     case AUTH_SUCCESS:
-      return { isFetching: false, user: action.user }
+      return {
+        isFetching: false,
+        user: action.user,
+        errors: null,
+      }
 
     case AUTH_FAILURE:
-      return { ...state, isFetching: false }
+      return {
+        ...state,
+        isFetching: false,
+        errors: action.errors,
+      }
 
     default:
       return state
