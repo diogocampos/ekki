@@ -32,7 +32,7 @@ class CreditCards extends React.Component {
         ) : null}
 
         <Title>Add a card</Title>
-        <AddCardForm errors={cards.errors} onSubmit={this.handleAddCard} />
+        <CardForm errors={cards.errors} onSubmit={this.handleAddCard} />
       </div>
     )
   }
@@ -63,33 +63,29 @@ function Card(props) {
   )
 }
 
-function AddCardForm(props) {
+function CardForm(props) {
   const { errors, onSubmit } = props
   return (
-    <div className="columns is-centered is-mobile">
-      <div className="column is-narrow">
-        <Form onSubmit={onSubmit}>
-          <Field
-            name="number"
-            placeholder="Card number"
-            errorMessage={errors && errors.number}
-          />
-          <Field
-            name="expiry"
-            placeholder="Expiration date"
-            errorMessage={errors && errors.expiry}
-          />
-          <Field
-            name="holder"
-            placeholder="Name in card"
-            errorMessage={errors && errors.holder}
-          />
-          <div className="buttons is-right">
-            <Button type="submit">Add</Button>
-          </div>
-        </Form>
+    <Form onSubmit={onSubmit}>
+      <Field
+        name="number"
+        placeholder="Card number"
+        errorMessage={errors && errors.number}
+      />
+      <Field
+        name="expiry"
+        placeholder="Expiration date"
+        errorMessage={errors && errors.expiry}
+      />
+      <Field
+        name="holder"
+        placeholder="Name in card"
+        errorMessage={errors && errors.holder}
+      />
+      <div className="buttons is-right">
+        <Button type="submit">Add</Button>
       </div>
-    </div>
+    </Form>
   )
 }
 

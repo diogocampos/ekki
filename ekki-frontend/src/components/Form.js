@@ -16,9 +16,13 @@ class Form extends React.Component {
 
   render() {
     return (
-      <form {...this.props} onSubmit={this.handleSubmit}>
-        {this.props.children}
-      </form>
+      <div className="columns is-centered is-mobile">
+        <div className="column is-narrow">
+          <form {...this.props} onSubmit={this.handleSubmit}>
+            {this.props.children}
+          </form>
+        </div>
+      </div>
     )
   }
 }

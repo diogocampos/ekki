@@ -58,11 +58,7 @@ function LoginHeader(props) {
 function LoginBody(props) {
   return (
     <div className="hero-body">
-      <div className="container has-text-centered">
-        <div className="columns is-centered is-mobile">
-          <div className="column is-narrow">{props.children}</div>
-        </div>
-      </div>
+      <div className="container has-text-centered">{props.children}</div>
     </div>
   )
 }
