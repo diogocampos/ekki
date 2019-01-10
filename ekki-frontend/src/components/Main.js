@@ -16,11 +16,15 @@ const TABS = [
   { label: 'Cards', component: CreditCards },
 ]
 
+const getTab = () => +localStorage.getItem('tab')
+const saveTab = index => localStorage.setItem('tab', index)
+
 class Main extends React.Component {
-  state = { activeTab: 0 }
+  state = { activeTab: getTab() }
 
   handleClickTab = index => {
     this.setState(state => ({ activeTab: index }))
+    saveTab(index)
   }
 
   render() {
