@@ -47,15 +47,26 @@ export class ApiError {
 
 export const getBalance = () => ekki('GET', '/balance')
 
+// /cards methods
+
+export const addCard = ({ number, expiry, holder }) => {
+  validateCardData(number, expiry, holder)
+  return ekki('POST', '/cards', { card: { number, expiry, holder } })
+}
+
+export const getCards = () => ekki('GET', '/cards')
+
+export const deleteCard = id => ekki('DELETE', `/cards/${id}`)
+
 // /users methods
 
 export const signUp = ({ username, password, confirm }) => {
-  validateUsersRequest(username, password, confirm)
+  validateUserData(username, password, confirm)
   return ekki('POST', '/users', { user: { username, password } })
 }
 
 export const logIn = ({ username, password }) => {
-  validateUsersRequest(username, password, password)
+  validateUserData(username, password, password)
   return ekki('POST', '/users/login', { user: { username, password } })
 }
 
@@ -65,17 +76,24 @@ export const logOut = () => ekki('DELETE', '/users/me/token')
 
 // Validation
 
-function validateUsersRequest(username, password, confirm) {
-  if (!username) {
-    throw new ApiError({ username: 'Username is required' })
-  }
-  if (!password) {
-    throw new ApiError({ password: 'Password is required' })
-  }
-  if (!confirm) {
-    throw new ApiError({ confirm: 'Password confirmation is required' })
-  }
+function validateCardData(number, expiry, holder) {
+  requires(number, 'number', 'Card number')
+  requires(expiry, 'expiry', 'Expiration date')
+  requires(holder, 'holder', 'Card holder')
+}
+
+function validateUserData(username, password, confirm) {
+  requires(username, 'username', 'Username')
+  requires(password, 'password', 'Password')
+  requires(confirm, 'confirm', 'Password confirmation')
+
   if (password !== confirm) {
     throw new ApiError({ confirm: "Passwords don't match" })
+  }
+}
+
+function requires(value, fieldName, fieldLabel) {
+  if (!value) {
+    throw new ApiError({ [fieldName]: `${fieldLabel} is required` })
   }
 }
