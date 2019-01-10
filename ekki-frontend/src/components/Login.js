@@ -1,9 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Form from './Form'
+import Form, { Field } from './Form'
 import Navbar, { NavbarItem } from './Navbar'
-import { Button, Field, Title } from './utils'
+import { Button, Title } from './utils'
 import { actions } from '../state'
 
 const LOGIN = 'Log in'
@@ -36,30 +36,7 @@ class Login extends React.Component {
         </LoginHeader>
         <LoginBody>
           <Title>{mode === LOGIN ? LOGIN : SIGNUP}</Title>
-          <Form onSubmit={this.handleSubmit}>
-            <Field
-              name="username"
-              placeholder="Username"
-              errorMessage={errors.username}
-            />
-            <Field
-              name="password"
-              type="password"
-              placeholder="Password"
-              errorMessage={errors.password}
-            />
-            {mode === SIGNUP && (
-              <Field
-                name="confirm"
-                type="password"
-                placeholder="Confirm password"
-                errorMessage={errors.confirm}
-              />
-            )}
-            <Button className="is-medium is-inverted is-outlined" type="submit">
-              Submit
-            </Button>
-          </Form>
+          <LoginForm mode={mode} errors={errors} onSubmit={this.handleSubmit} />
         </LoginBody>
       </LoginContainer>
     )
@@ -87,6 +64,39 @@ function LoginBody(props) {
         </div>
       </div>
     </div>
+  )
+}
+
+function LoginForm(props) {
+  const { mode, errors, onSubmit } = props
+  return (
+    <Form onSubmit={onSubmit}>
+      <Field
+        className="is-primary is-medium"
+        name="username"
+        placeholder="Username"
+        errorMessage={errors.username}
+      />
+      <Field
+        className="is-primary is-medium"
+        name="password"
+        type="password"
+        placeholder="Password"
+        errorMessage={errors.password}
+      />
+      {mode === SIGNUP && (
+        <Field
+          className="is-primary is-medium"
+          name="confirm"
+          type="password"
+          placeholder="Confirm password"
+          errorMessage={errors.confirm}
+        />
+      )}
+      <Button className="is-medium is-inverted is-outlined" type="submit">
+        Submit
+      </Button>
+    </Form>
   )
 }
 

@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { formatCurrency, Spinner, Subtitle, Title } from './utils'
+import { Spinner, Subtitle, Title } from './utils'
+import { formatCurrency } from '../lib/format'
 import { actions } from '../state'
 
 class Home extends React.Component {

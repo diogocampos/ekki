@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 
 class Form extends React.Component {
@@ -23,3 +24,23 @@ class Form extends React.Component {
 }
 
 export default Form
+
+export function Field(props) {
+  const { errorMessage, ...inputProps } = props
+  return (
+    <div className="field ekki-field">
+      <div className="control">
+        <input
+          type="text"
+          {...inputProps}
+          className={classNames(
+            'input',
+            errorMessage && 'is-danger',
+            props.className
+          )}
+        />
+      </div>
+      <p className="help is-danger">{errorMessage}</p>
+    </div>
+  )
+}
