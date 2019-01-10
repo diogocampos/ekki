@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import Form, { Field } from './Form'
 import { Button, Spinner, Title } from './utils'
 import { actions } from '../state'
 
@@ -9,8 +10,8 @@ class CreditCards extends React.Component {
     this.props.getCards()
   }
 
-  handleAddCard = () => {
-    console.log('TODO: show form to add a card')
+  handleAddCard = formData => {
+    this.props.onAddCard(formData)
   }
 
   handleDeleteCard = id => {
@@ -21,39 +22,25 @@ class CreditCards extends React.Component {
     const { cards } = this.props
     return (
       <div className="container ekki-container">
-        <CardsHeader onAdd={this.handleAddCard} />
-
         {cards.isFetching ? (
           <Spinner />
-        ) : (
-          <Cards items={cards.items} onDelete={this.handleDeleteCard} />
-        )}
+        ) : cards.items.length ? (
+          <>
+            <Title>Credit cards</Title>
+            <Cards items={cards.items} onDelete={this.handleDeleteCard} />
+          </>
+        ) : null}
+
+        <Title>Add a card</Title>
+        <AddCardForm errors={cards.errors} onSubmit={this.handleAddCard} />
       </div>
     )
   }
 }
 
-function CardsHeader(props) {
-  const { onAdd } = props
-  return (
-    <nav className="level is-mobile">
-      <div className="level-left">
-        <Title>Credit cards</Title>
-      </div>
-      <div className="level-right">
-        <Button onClick={onAdd}>Add</Button>
-      </div>
-    </nav>
-  )
-}
-
 function Cards(props) {
   let { items, onDelete } = props
-  return items.length === 0 ? (
-    <p className="has-text-centered">
-      Click <strong>Add</strong> to add a card.
-    </p>
-  ) : (
+  return (
     <div className="columns is-multiline is-centered is-mobile">
       {items.map(card => (
         <div key={card._id} className="column is-narrow">
@@ -72,6 +59,36 @@ function Card(props) {
       <p>{card.number.replace(/\*/g, '•')}</p>
       <p>{card.expiry}</p>
       <p className="is-uppercase">{card.holder}</p>
+    </div>
+  )
+}
+
+function AddCardForm(props) {
+  const { errors, onSubmit } = props
+  return (
+    <div className="columns is-centered is-mobile">
+      <div className="column is-narrow">
+        <Form onSubmit={onSubmit}>
+          <Field
+            name="number"
+            placeholder="Card number"
+            errorMessage={errors && errors.number}
+          />
+          <Field
+            name="expiry"
+            placeholder="Expiration date"
+            errorMessage={errors && errors.expiry}
+          />
+          <Field
+            name="holder"
+            placeholder="Name in card"
+            errorMessage={errors && errors.holder}
+          />
+          <div className="buttons is-right">
+            <Button type="submit">Add</Button>
+          </div>
+        </Form>
+      </div>
     </div>
   )
 }
