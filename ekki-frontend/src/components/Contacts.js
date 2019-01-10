@@ -14,6 +14,10 @@ class Contacts extends React.Component {
     this.props.onAddContact(formData)
   }
 
+  handleDeleteContact = id => {
+    this.props.onDeleteContact(id)
+  }
+
   render() {
     const { contacts } = this.props
     return (
@@ -25,8 +29,12 @@ class Contacts extends React.Component {
             <ContactList
               title="Favorites"
               items={getFavorites(contacts.items)}
+              onDelete={this.handleDeleteContact}
             />
-            <ContactList items={getNonFavorites(contacts.items)} />
+            <ContactList
+              items={getNonFavorites(contacts.items)}
+              onDelete={this.handleDeleteContact}
+            />
           </>
         )}
 
@@ -41,22 +49,23 @@ class Contacts extends React.Component {
 }
 
 function ContactList(props) {
-  const { title = 'Contacts', items } = props
+  const { title = 'Contacts', items, onDelete } = props
   if (items.length === 0) return null
   return (
     <>
       <Title>{title}</Title>
       {items.map(contact => (
-        <Contact key={contact._id} contact={contact} />
+        <Contact key={contact._id} contact={contact} onDelete={onDelete} />
       ))}
     </>
   )
 }
 
 function Contact(props) {
-  const { contact } = props
+  const { contact, onDelete } = props
   return (
     <div className="box notification is-white">
+      <button className="delete" onClick={() => onDelete(contact._id)} />
       <p>{contact.username}</p>
     </div>
   )
