@@ -43,11 +43,11 @@ export class ApiError {
   }
 }
 
-// /balance methods
+// /balance
 
 export const getBalance = () => ekki('GET', '/balance')
 
-// /cards methods
+// /cards
 
 export const addCard = ({ number, expiry, holder }) => {
   validateCardData(number, expiry, holder)
@@ -58,7 +58,7 @@ export const getCards = () => ekki('GET', '/cards')
 
 export const deleteCard = id => ekki('DELETE', `/cards/${id}`)
 
-// /contacts methods
+// /contacts
 
 export const addContact = ({ username }) => {
   validateContactData(username)
@@ -72,7 +72,18 @@ export const updateContact = (id, { favorite }) =>
 
 export const deleteContact = id => ekki('DELETE', `/contacts/${id}`)
 
-// /users methods
+// /transfers
+
+export const makeTransfer = ({ to, amount, cardId, password }) => {
+  validateTransferData(to, amount, cardId, password)
+  return ekki('POST', '/transfers', {
+    transfer: { to, amount, cardId, password },
+  })
+}
+
+export const getTransfers = () => ekki('GET', '/transfers')
+
+// /users
 
 export const signUp = ({ username, password, confirm }) => {
   validateUserData(username, password, confirm)
@@ -98,6 +109,11 @@ function validateCardData(number, expiry, holder) {
 
 function validateContactData(username) {
   requires(username, 'username', 'Username')
+}
+
+function validateTransferData(to, amount, cardId, password) {
+  requires(to, 'to', "Receiver's username")
+  requires(amount, 'amount', 'Amount')
 }
 
 function validateUserData(username, password, confirm) {
