@@ -6,7 +6,7 @@ export function Button(props) {
     <button
       type="button"
       {...props}
-      className={classNames('button is-primary is-medium', props.className)}
+      className={classNames('button is-primary', props.className)}
     >
       {props.children}
     </button>
@@ -14,19 +14,18 @@ export function Button(props) {
 }
 
 export function Field(props) {
-  const { className, name, type = 'text', placeholder, errorMessage } = props
+  const { errorMessage, ...inputProps } = props
   return (
     <div className="field">
       <div className="control">
         <input
+          type="text"
+          {...inputProps}
           className={classNames(
             'input is-primary is-medium',
             errorMessage && 'is-danger',
-            className
+            props.className
           )}
-          type={type}
-          name={name}
-          placeholder={placeholder}
         />
       </div>
       <p className="help is-danger">{errorMessage}</p>
@@ -36,9 +35,11 @@ export function Field(props) {
 
 export function Spinner() {
   return (
-    <button type="button" className="button is-loading is-white is-large">
-      Loading…
-    </button>
+    <div className="container has-text-centered">
+      <button type="button" className="button is-loading is-white is-large">
+        Loading…
+      </button>
+    </div>
   )
 }
 

@@ -13,14 +13,10 @@ class Home extends React.Component {
     const { user, balance } = this.props
     return (
       <HomeContainer>
-        {balance.isFetching ? (
+        {balance.isFetching && balance.value == null ? (
           <Spinner />
         ) : (
-          <>
-            <Title>Welcome, {user.username}</Title>
-            <Subtitle>Your balance is</Subtitle>
-            <Balance value={balance.value} />
-          </>
+          <Balance username={user.username} value={balance.value} />
         )}
       </HomeContainer>
     )
@@ -30,22 +26,24 @@ class Home extends React.Component {
 function HomeContainer(props) {
   return (
     <div className="hero">
-      <div className="hero-body">
-        <div className="container has-text-centered">{props.children}</div>
-      </div>
+      <div className="hero-body">{props.children}</div>
     </div>
   )
 }
 
 function Balance(props) {
-  const { value } = props
+  const { username, value } = props
   const [integer, fraction] = formatCurrency(value).split('.')
   return (
-    <p className="has-text-primary">
-      <span className="subtitle is-4">$</span>
-      <span className="title is-1">{integer}</span>
-      <span className="title is-2">.{fraction}</span>
-    </p>
+    <div className="container has-text-centered">
+      <Title>Welcome, {username}</Title>
+      <Subtitle>Your balance is</Subtitle>
+      <p className="has-text-primary">
+        <span className="subtitle is-4">$</span>
+        <span className="title is-1">{integer}</span>
+        <span className="title is-2">.{fraction}</span>
+      </p>
+    </div>
   )
 }
 

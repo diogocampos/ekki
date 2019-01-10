@@ -56,7 +56,7 @@ class Login extends React.Component {
                 errorMessage={errors.confirm}
               />
             )}
-            <Button className="is-inverted is-outlined" type="submit">
+            <Button className="is-medium is-inverted is-outlined" type="submit">
               Submit
             </Button>
           </Form>

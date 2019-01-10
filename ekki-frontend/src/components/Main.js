@@ -26,7 +26,7 @@ class Main extends React.Component {
   render() {
     const { activeTab } = this.state
     const { onLogOut } = this.props
-    const TabContents = TABS[activeTab].component
+    const TabContent = TABS[activeTab].component
     return (
       <div>
         <Navbar>
@@ -34,10 +34,10 @@ class Main extends React.Component {
         </Navbar>
         <Tabs onClick={this.handleClickTab}>
           {TABS.map((tab, i) => (
-            <Tab key={i} id={i} activeId={activeTab} label={tab.label} />
+            <Tab key={i} index={i} activeIndex={activeTab} label={tab.label} />
           ))}
         </Tabs>
-        <TabContents />
+        <TabContent />
       </div>
     )
   }
@@ -59,11 +59,11 @@ function Tabs(props) {
 }
 
 function Tab(props) {
-  const { id, activeId, label, onClick } = props
+  const { index, activeIndex, label, onClick } = props
   return (
-    <li className={classNames(activeId === id && 'is-active')}>
+    <li className={classNames(activeIndex === index && 'is-active')}>
       {/*eslint-disable-next-line*/}
-      <a onClick={() => onClick(id)}>{label}</a>
+      <a onClick={() => onClick(index)}>{label}</a>
     </li>
   )
 }
