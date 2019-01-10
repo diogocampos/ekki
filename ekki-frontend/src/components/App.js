@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import Login from './Login'
 import Main from './Main'
+import { Spinner } from './utils'
 import { actions } from '../state'
 
 class App extends React.Component {
@@ -22,9 +23,7 @@ function Loading() {
     <div className="hero is-fullheight">
       <div className="hero-body">
         <div className="container has-text-centered">
-          <button type="button" className="button is-loading is-white is-large">
-            Loading…
-          </button>
+          <Spinner />
         </div>
       </div>
     </div>
