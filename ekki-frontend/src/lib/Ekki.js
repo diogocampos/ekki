@@ -43,6 +43,10 @@ export class ApiError {
   }
 }
 
+// /balance methods
+
+export const getBalance = () => ekki('GET', '/balance')
+
 // /users methods
 
 export const signUp = ({ username, password, confirm }) => {
@@ -58,6 +62,8 @@ export const logIn = ({ username, password }) => {
 export const getUser = () => ekki('GET', '/users/me')
 
 export const logOut = () => ekki('DELETE', '/users/me/token')
+
+// Validation
 
 function validateUsersRequest(username, password, confirm) {
   if (!username) {

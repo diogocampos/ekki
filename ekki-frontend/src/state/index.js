@@ -4,13 +4,16 @@ import { applyMiddleware, combineReducers, createStore } from 'redux'
 import thunk from 'redux-thunk'
 
 import auth, * as authActions from './auth'
+import balance, * as balanceActions from './balance'
 
 export const actions = {
   ...authActions,
+  ...balanceActions,
 }
 
 const reducer = combineReducers({
   auth,
+  balance,
 })
 
 export function provide(component) {
