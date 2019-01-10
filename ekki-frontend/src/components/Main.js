@@ -28,7 +28,7 @@ class Main extends React.Component {
     const { onLogOut } = this.props
     const TabContents = TABS[activeTab].component
     return (
-      <div className="container">
+      <div>
         <Navbar>
           <NavbarItem onClick={onLogOut}>Log out</NavbarItem>
         </Navbar>
@@ -46,12 +46,14 @@ class Main extends React.Component {
 function Tabs(props) {
   const { onClick } = props
   return (
-    <div className="tabs is-centered">
-      <ul>
-        {React.Children.map(props.children, child =>
-          React.cloneElement(child, { onClick })
-        )}
-      </ul>
+    <div className="container">
+      <div className="tabs is-centered">
+        <ul>
+          {React.Children.map(props.children, child =>
+            React.cloneElement(child, { onClick })
+          )}
+        </ul>
+      </div>
     </div>
   )
 }
