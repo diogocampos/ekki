@@ -33,7 +33,7 @@ const authFailure = errors => ({ type: AUTH_FAILURE, errors })
 const defaultState = {
   isFetching: Ekki.hasToken(),
   user: null,
-  errors: null,
+  errors: null, // error messages for the login/signup form
 }
 
 export default function auth(state = defaultState, action) {

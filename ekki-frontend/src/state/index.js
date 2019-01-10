@@ -5,15 +5,18 @@ import thunk from 'redux-thunk'
 
 import auth, * as authActions from './auth'
 import balance, * as balanceActions from './balance'
+import cards, * as cardsActions from './cards'
 
 export const actions = {
   ...authActions,
   ...balanceActions,
+  ...cardsActions,
 }
 
 const reducer = combineReducers({
   auth,
   balance,
+  cards,
 })
 
 export function provide(component) {
