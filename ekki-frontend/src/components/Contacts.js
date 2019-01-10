@@ -1,12 +1,17 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { Spinner, Title } from './utils'
+import Form, { Field } from './Form'
+import { Button, Spinner, Title } from './utils'
 import { actions } from '../state'
 
 class Contacts extends React.Component {
   componentDidMount() {
     this.props.getContacts()
+  }
+
+  handleAddContact = formData => {
+    this.props.onAddContact(formData)
   }
 
   render() {
@@ -24,6 +29,12 @@ class Contacts extends React.Component {
             <ContactList items={getNonFavorites(contacts.items)} />
           </>
         )}
+
+        <Title>Add a contact</Title>
+        <ContactForm
+          errors={contacts.errors}
+          onSubmit={this.handleAddContact}
+        />
       </div>
     )
   }
@@ -48,6 +59,20 @@ function Contact(props) {
     <div className="box notification is-white">
       <p>{contact.username}</p>
     </div>
+  )
+}
+
+function ContactForm(props) {
+  const { errors, onSubmit } = props
+  return (
+    <Form onSubmit={onSubmit}>
+      <Field
+        name="username"
+        placeholder="Username"
+        errorMessage={errors && errors.username}
+      />
+      <Button type="submit">Add</Button>
+    </Form>
   )
 }
 
