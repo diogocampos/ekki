@@ -27,29 +27,34 @@ class Contacts extends React.Component {
     const { contacts } = this.props
     return (
       <div className="container ekki-container">
-        {contacts.isFetching ? (
-          <Spinner />
-        ) : (
-          <>
-            <ContactList
-              title="Favorites"
-              items={getFavorites(contacts.items)}
-              onToggleFavorite={this.handleToggleFavorite}
-              onDelete={this.handleDeleteContact}
-            />
-            <ContactList
-              items={getNonFavorites(contacts.items)}
-              onToggleFavorite={this.handleToggleFavorite}
-              onDelete={this.handleDeleteContact}
-            />
-          </>
-        )}
+        <div className="columns">
+          <div className="column">
+            {contacts.isFetching ? (
+              <Spinner />
+            ) : (
+              <>
+                <ContactList
+                  title="Favorites"
+                  items={getFavorites(contacts.items)}
+                  onToggleFavorite={this.handleToggleFavorite}
+                  onDelete={this.handleDeleteContact}
+                />
+                <ContactList
+                  items={getNonFavorites(contacts.items)}
+                  onToggleFavorite={this.handleToggleFavorite}
+                  onDelete={this.handleDeleteContact}
+                />
+              </>
+            )}
+          </div>
 
-        <Title>Add a contact</Title>
-        <ContactForm
-          errors={contacts.errors}
-          onSubmit={this.handleAddContact}
-        />
+          <div className="column is-narrow-desktop">
+            <ContactForm
+              errors={contacts.errors}
+              onSubmit={this.handleAddContact}
+            />
+          </div>
+        </div>
       </div>
     )
   }
@@ -118,6 +123,7 @@ function ContactForm(props) {
   const { errors, onSubmit } = props
   return (
     <Form onSubmit={onSubmit}>
+      <Title>Add a contact</Title>
       <Field
         name="username"
         placeholder="Username"

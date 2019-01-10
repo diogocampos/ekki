@@ -16,13 +16,9 @@ class Form extends React.Component {
 
   render() {
     return (
-      <div className="columns is-centered is-mobile">
-        <div className="column is-narrow">
-          <form {...this.props} onSubmit={this.handleSubmit}>
-            {this.props.children}
-          </form>
-        </div>
-      </div>
+      <form {...this.props} onSubmit={this.handleSubmit}>
+        {this.props.children}
+      </form>
     )
   }
 }
@@ -32,7 +28,7 @@ export default Form
 export function Field(props) {
   const { errorMessage, ...inputProps } = props
   return (
-    <div className="field ekki-field">
+    <div className="field">
       <div className="control">
         <input
           type="text"

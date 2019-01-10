@@ -22,17 +22,22 @@ class CreditCards extends React.Component {
     const { cards } = this.props
     return (
       <div className="container ekki-container">
-        {cards.isFetching ? (
-          <Spinner />
-        ) : cards.items.length ? (
-          <>
-            <Title>Credit cards</Title>
-            <Cards items={cards.items} onDelete={this.handleDeleteCard} />
-          </>
-        ) : null}
+        <div className="columns">
+          <div className="column">
+            {cards.isFetching ? (
+              <Spinner />
+            ) : cards.items.length ? (
+              <>
+                <Title>Credit cards</Title>
+                <Cards items={cards.items} onDelete={this.handleDeleteCard} />
+              </>
+            ) : null}
+          </div>
 
-        <Title>Add a card</Title>
-        <CardForm errors={cards.errors} onSubmit={this.handleAddCard} />
+          <div className="column is-narrow-desktop">
+            <CardForm errors={cards.errors} onSubmit={this.handleAddCard} />
+          </div>
+        </div>
       </div>
     )
   }
@@ -67,6 +72,7 @@ function CardForm(props) {
   const { errors, onSubmit } = props
   return (
     <Form onSubmit={onSubmit}>
+      <Title>Add a card</Title>
       <Field
         name="number"
         placeholder="Card number"
@@ -82,9 +88,7 @@ function CardForm(props) {
         placeholder="Name in card"
         errorMessage={errors && errors.holder}
       />
-      <div className="buttons is-right">
-        <Button type="submit">Add</Button>
-      </div>
+      <Button type="submit">Add</Button>
     </Form>
   )
 }

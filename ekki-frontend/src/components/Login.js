@@ -35,7 +35,6 @@ class Login extends React.Component {
           </Navbar>
         </LoginHeader>
         <LoginBody>
-          <Title>{mode === LOGIN ? LOGIN : SIGNUP}</Title>
           <LoginForm mode={mode} errors={errors} onSubmit={this.handleSubmit} />
         </LoginBody>
       </LoginContainer>
@@ -58,7 +57,11 @@ function LoginHeader(props) {
 function LoginBody(props) {
   return (
     <div className="hero-body">
-      <div className="container has-text-centered">{props.children}</div>
+      <div className="container has-text-centered">
+        <div className="columns is-centered is-mobile">
+          <div className="column is-narrow">{props.children}</div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -66,33 +69,36 @@ function LoginBody(props) {
 function LoginForm(props) {
   const { mode, errors, onSubmit } = props
   return (
-    <Form onSubmit={onSubmit}>
-      <Field
-        className="is-primary is-medium"
-        name="username"
-        placeholder="Username"
-        errorMessage={errors.username}
-      />
-      <Field
-        className="is-primary is-medium"
-        name="password"
-        type="password"
-        placeholder="Password"
-        errorMessage={errors.password}
-      />
-      {mode === SIGNUP && (
+    <>
+      <Title>{mode === LOGIN ? LOGIN : SIGNUP}</Title>
+      <Form onSubmit={onSubmit}>
         <Field
           className="is-primary is-medium"
-          name="confirm"
-          type="password"
-          placeholder="Confirm password"
-          errorMessage={errors.confirm}
+          name="username"
+          placeholder="Username"
+          errorMessage={errors.username}
         />
-      )}
-      <Button className="is-medium is-inverted is-outlined" type="submit">
-        Submit
-      </Button>
-    </Form>
+        <Field
+          className="is-primary is-medium"
+          name="password"
+          type="password"
+          placeholder="Password"
+          errorMessage={errors.password}
+        />
+        {mode === SIGNUP && (
+          <Field
+            className="is-primary is-medium"
+            name="confirm"
+            type="password"
+            placeholder="Confirm password"
+            errorMessage={errors.confirm}
+          />
+        )}
+        <Button className="is-medium is-inverted is-outlined" type="submit">
+          Submit
+        </Button>
+      </Form>
+    </>
   )
 }
 
