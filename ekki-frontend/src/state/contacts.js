@@ -24,9 +24,12 @@ export const addContact = data =>
     dispatch(contactAdded(contact))
   })
 
-export const updateContact = (id, data) =>
+export const toggleFavoriteContact = contact => dispatch =>
+  dispatch(updateContact(contact._id, { favorite: !contact.favorite }))
+
+const updateContact = (id, data) =>
   wrap(async dispatch => {
-    const { contact } = await Ekki.updateContact(data)
+    const { contact } = await Ekki.updateContact(id, data)
     dispatch(contactUpdated(id, contact))
   })
 

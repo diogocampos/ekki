@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React from 'react'
 import { connect } from 'react-redux'
 
@@ -12,6 +13,10 @@ class Contacts extends React.Component {
 
   handleAddContact = formData => {
     this.props.onAddContact(formData)
+  }
+
+  handleToggleFavorite = contact => {
+    this.props.onToggleFavoriteContact(contact)
   }
 
   handleDeleteContact = id => {
@@ -29,10 +34,12 @@ class Contacts extends React.Component {
             <ContactList
               title="Favorites"
               items={getFavorites(contacts.items)}
+              onToggleFavorite={this.handleToggleFavorite}
               onDelete={this.handleDeleteContact}
             />
             <ContactList
               items={getNonFavorites(contacts.items)}
+              onToggleFavorite={this.handleToggleFavorite}
               onDelete={this.handleDeleteContact}
             />
           </>
@@ -49,25 +56,61 @@ class Contacts extends React.Component {
 }
 
 function ContactList(props) {
-  const { title = 'Contacts', items, onDelete } = props
+  const { title = 'Contacts', items, ...itemProps } = props
   if (items.length === 0) return null
   return (
     <>
       <Title>{title}</Title>
       {items.map(contact => (
-        <Contact key={contact._id} contact={contact} onDelete={onDelete} />
+        <Contact {...itemProps} key={contact._id} contact={contact} />
       ))}
     </>
   )
 }
 
 function Contact(props) {
-  const { contact, onDelete } = props
+  const { contact, onToggleFavorite, onDelete } = props
   return (
-    <div className="box notification is-white">
-      <button className="delete" onClick={() => onDelete(contact._id)} />
-      <p>{contact.username}</p>
-    </div>
+    <article className="box media">
+      <figure className="media-left">
+        <p className="image is-32x32">
+          <img
+            className="is-rounded"
+            src={avatarUrl(contact.username)}
+            alt=""
+          />
+        </p>
+      </figure>
+
+      <div className="media-content">
+        <p>
+          {contact.username}{' '}
+          <FavoriteButton
+            favorite={contact.favorite}
+            onClick={() => onToggleFavorite(contact)}
+          />
+        </p>
+      </div>
+
+      <div className="media-right">
+        <button className="delete" onClick={() => onDelete(contact._id)} />
+      </div>
+    </article>
+  )
+}
+
+function FavoriteButton(props) {
+  const { favorite, onClick } = props
+  return (
+    <span
+      className={classNames(
+        'ekki-clickable is-size-5',
+        favorite ? 'has-text-warning' : 'has-text-grey-lighter'
+      )}
+      onClick={onClick}
+    >
+      ★
+    </span>
   )
 }
 
@@ -92,7 +135,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   getContacts: actions.getContacts,
   onAddContact: actions.addContact,
-  onUpdateContact: actions.updateContact,
+  onToggleFavoriteContact: actions.toggleFavoriteContact,
   onDeleteContact: actions.deleteContact,
 }
 
@@ -111,3 +154,6 @@ const getNonFavorites = items =>
 
 const sortContacts = items =>
   items.sort((a, b) => a.username.localeCompare(b.username))
+
+const avatarUrl = (username, size = 64) =>
+  `https://api.adorable.io/avatars/${size}/${username}.png`
