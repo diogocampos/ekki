@@ -58,6 +58,20 @@ export const getCards = () => ekki('GET', '/cards')
 
 export const deleteCard = id => ekki('DELETE', `/cards/${id}`)
 
+// /contacts methods
+
+export const addContact = ({ username }) => {
+  validateContactData(username)
+  return ekki('POST', '/contacts', { contact: { username } })
+}
+
+export const getContacts = () => ekki('GET', '/contacts')
+
+export const updateContact = (id, { favorite }) =>
+  ekki('PATCH', `/contacts/${id}`, { patch: { favorite: !!favorite } })
+
+export const deleteContact = id => ekki('DELETE', `/contacts/${id}`)
+
 // /users methods
 
 export const signUp = ({ username, password, confirm }) => {
@@ -80,6 +94,10 @@ function validateCardData(number, expiry, holder) {
   requires(number, 'number', 'Card number')
   requires(expiry, 'expiry', 'Expiration date')
   requires(holder, 'holder', 'Card holder')
+}
+
+function validateContactData(username) {
+  requires(username, 'username', 'Username')
 }
 
 function validateUserData(username, password, confirm) {
