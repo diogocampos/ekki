@@ -15,10 +15,12 @@ export function Button(props) {
 
 export function Spinner() {
   return (
-    <div className="container has-text-centered">
-      <button type="button" className="button is-loading is-white is-large">
-        Loading…
-      </button>
+    <div className="columns is-centered is-mobile">
+      <div className="column is-narrow">
+        <button type="button" className="button is-loading is-white is-large">
+          Loading…
+        </button>
+      </div>
     </div>
   )
 }

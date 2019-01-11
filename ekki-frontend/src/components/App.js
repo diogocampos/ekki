@@ -21,11 +21,13 @@ class App extends React.Component {
 
 function Loading() {
   return (
-    <div className="hero is-fullheight">
+    <section className="hero is-fullheight">
       <div className="hero-body">
-        <Spinner />
+        <div className="container has-text-centered">
+          <Spinner />
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
 
