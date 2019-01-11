@@ -42,12 +42,11 @@ router.post('/', authenticate, [
 
     if (totalAmount > Transfer.CONFIRMATION_THRESHOLD) {
       // large amount: require password
-      const user = await User.findByCredentials(sender.username, password)
-      if (!user) {
-        throw new EkkiError({
-          password: 'Password is required for large amounts',
-        })
+      if (!password) {
+        throw new EkkiError({ password: 'Password required for large amounts' })
       }
+      const user = await User.findByCredentials(sender.username, password)
+      if (!user) throw new EkkiError({ password: 'Password is incorrect' })
     }
 
     // Check if amount is larger than the sender's balance
@@ -59,7 +58,7 @@ router.post('/', authenticate, [
     if (totalAmount > senderBalance) {
       // insufficient balance: require credit card id
       if (!cardId) {
-        throw new EkkiError({ cardId: 'Credit card ID is required' })
+        throw new EkkiError({ cardId: 'Card required, insufficient balance' })
       }
 
       const card = await CreditCard.findOne({ _id: cardId, _owner: sender._id })
