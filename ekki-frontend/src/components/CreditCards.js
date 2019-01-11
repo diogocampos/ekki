@@ -85,7 +85,7 @@ function CardForm(props) {
       />
       <Field
         name="holder"
-        placeholder="Name in card"
+        placeholder="Name on card"
         errorMessage={errors && errors.holder}
       />
       <Button type="submit">Add</Button>
