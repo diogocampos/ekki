@@ -75,7 +75,8 @@ export const deleteContact = id => ekki('DELETE', `/contacts/${id}`)
 // /transfers
 
 export const makeTransfer = ({ to, amount, cardId, password }) => {
-  validateTransferData(to, amount, cardId, password)
+  amount = (+amount).toFixed(2).replace('.', '') // convert to cents
+  validateTransferData(to, amount)
   return ekki('POST', '/transfers', {
     transfer: { to, amount, cardId, password },
   })
@@ -111,9 +112,13 @@ function validateContactData(username) {
   requires(username, 'username', 'Username')
 }
 
-function validateTransferData(to, amount, cardId, password) {
+function validateTransferData(to, amount) {
   requires(to, 'to', "Receiver's username")
-  requires(amount, 'amount', 'Amount')
+  // requires(amount, 'amount', 'Amount')
+
+  if (amount === 'NaN') {
+    throw new ApiError({ amount: 'Amount must be a valid number' })
+  }
 }
 
 function validateUserData(username, password, confirm) {
