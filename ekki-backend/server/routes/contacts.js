@@ -3,7 +3,13 @@ const express = require('express')
 const { authenticate } = require('./users')
 const Contact = require('../db/Contact')
 const User = require('../db/User')
-const { badRequest, notFound, validateId, wrap } = require('../middleware')
+const {
+  badRequest,
+  EkkiError,
+  notFound,
+  validateId,
+  wrap,
+} = require('../middleware')
 
 const router = express.Router()
 
@@ -23,9 +29,15 @@ router.post('/', authenticate, [
       User.findOne({ username }),
       Contact.findOne({ _owner: user._id, username }),
     ])
-    if (!targetUser) return notFound(req, res)
-    if (targetUser.username === user.username) return badRequest(req, res)
-    if (existingContact) return badRequest(req, res)
+    if (!targetUser) {
+      throw new EkkiError({ username: 'Username does not exist' }, 404)
+    }
+    if (targetUser.username === user.username) {
+      throw new EkkiError({ username: "You can't add a contact to yourself" })
+    }
+    if (existingContact) {
+      throw new EkkiError({ username: 'Contact already exists' })
+    }
 
     const data = { _owner: user._id, username: targetUser.username }
     const contact = await new Contact(data).save()

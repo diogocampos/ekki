@@ -13,7 +13,7 @@ const {
 const app = require('../app')
 const Contact = require('../db/Contact')
 
-const { objectContaining, stringMatching } = expect
+const { any, objectContaining, stringMatching } = expect
 const { authenticated } = fixtures
 
 describe('POST /contacts', () => {
@@ -57,17 +57,20 @@ describe('POST /contacts', () => {
   describe('with invalid data', () => {
     it('responds with 404 if the username does not exist', async () => {
       const contact = { username: fixtures.fakeUsername() }
-      await req({ contact }).expect(404, 'Not Found')
+      const res = await req({ contact }).expect(404)
+      expect(res.body).toEqual({ errors: { username: any(String) } })
     })
 
     it('responds with 400 if the contact already exists', async () => {
       const [{ username }] = fixtures.contactsOf(authenticated.user)
-      await req({ contact: { username } }).expect(400, 'Bad Request')
+      const res = await req({ contact: { username } }).expect(400)
+      expect(res.body).toEqual({ errors: { username: any(String) } })
     })
 
     it('responds with 400 if the contact is the same as the user', async () => {
       const contact = { username: authenticated.user.username }
-      await req({ contact }).expect(400, 'Bad Request')
+      const res = await req({ contact }).expect(400)
+      expect(res.body).toEqual({ errors: { username: any(String) } })
     })
 
     afterEach('does not create a new contact', async () => {
