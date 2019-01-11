@@ -7,7 +7,8 @@
     "db:test": "mongod --dbpath ./mongodb/test --storageEngine ephemeralForTest",
     "start": "node index.js",
     "test": "NODE_ENV=test mocha server/tests/*.test.js",
-    "test:watch": "npm test -- --watch --bail --reporter dot"
+    "test:watch": "npm test -- --watch --bail --reporter dot",
+    "deploy": "cd .. && git subtree push --prefix ekki-backend heroku master"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,5 +25,8 @@
     "expect": "^23.6.0",
     "mocha": "^5.2.0",
     "supertest": "^3.3.0"
+  },
+  "engines": {
+    "node": "11.6.0"
   }
 }

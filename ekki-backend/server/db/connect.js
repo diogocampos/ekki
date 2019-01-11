@@ -5,3 +5,7 @@ mongoose.connection = mongoose.createConnection(process.env.MONGODB_URI, {
   useFindAndModify: false,
   useNewUrlParser: true,
 })
+
+process.on('SIGTERM', () => {
+  mongoose.disconnect()
+})

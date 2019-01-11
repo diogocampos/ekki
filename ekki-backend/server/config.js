@@ -13,6 +13,11 @@ const env = {
     MONGODB_URI: localMongoDB,
     JWT_SECRET: randomSecret(),
   },
+  production: {
+    // PORT is set by Heroku
+    // MONGODB_URI is set by Heroku
+    JWT_SECRET: 'secret',
+  },
 }
 
 // set the values above as environment variables
