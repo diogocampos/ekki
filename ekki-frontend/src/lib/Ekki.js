@@ -1,4 +1,7 @@
-const URL = 'http://localhost:3001'
+const URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://ekki-diogo.herokuapp.com'
+    : 'http://localhost:3001'
 
 const TOKEN = 'token'
 const auth = { token: localStorage.getItem(TOKEN) }
