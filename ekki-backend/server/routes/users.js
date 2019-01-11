@@ -1,7 +1,7 @@
 const express = require('express')
 
 const User = require('../db/User')
-const { unauthorized, wrap } = require('../middleware')
+const { EkkiError, unauthorized, wrap } = require('../middleware')
 
 const router = express.Router()
 
@@ -36,8 +36,14 @@ router.post('/', [
 router.post('/login', [
   wrap(async (req, res) => {
     const { username, password } = req.body.user || {}
-    const user = await User.findByCredentials(username, password)
-    if (!user) return unauthorized(req, res)
+
+    const user = await User.findOne({ username })
+    if (!user) throw new EkkiError({ username: 'Username does not exist' }, 401)
+
+    const isCorrect = await user.checkCredentials(password)
+    if (!isCorrect) {
+      throw new EkkiError({ password: 'Password is incorrect' }, 401)
+    }
 
     const token = await user.generateAuthToken()
     res.header('X-Auth', token).json({ user })

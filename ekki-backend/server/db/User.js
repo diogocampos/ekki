@@ -32,20 +32,6 @@ const UserSchema = new mongoose.Schema({
 UserSchema.plugin(uniqueValidator, { message: 'Username already exists' })
 
 /**
- * Returns the user with the given username if the password is correct.
- */
-UserSchema.statics.findByCredentials = async function(username, password) {
-  const User = this
-  if (!username || !password) return null
-
-  const user = await User.findOne({ username })
-  if (!user) return null
-
-  const isCorrectPassword = await bcrypt.compare(password, user.password)
-  return isCorrectPassword ? user : null
-}
-
-/**
  * Verifies an auth token and returns the corresponding user.
  */
 UserSchema.statics.findByToken = async function(token) {
@@ -58,6 +44,17 @@ UserSchema.statics.findByToken = async function(token) {
   const user = await User.findById(payload._id)
   const isValidToken = user && user.tokens.find(item => item === token)
   return isValidToken ? user : null
+}
+
+/**
+ * Returns the user with the given username if the password is correct.
+ */
+UserSchema.methods.checkCredentials = async function(password) {
+  const user = this
+  if (!password) return null
+
+  const isCorrectPassword = await bcrypt.compare(password, user.password)
+  return isCorrectPassword
 }
 
 /**

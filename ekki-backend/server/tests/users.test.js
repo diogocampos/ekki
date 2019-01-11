@@ -129,13 +129,15 @@ describe('POST /users/login', () => {
 
     it('responds with 401 if the username does not exist', async () => {
       const user = fixtures.fakeUser()
-      res = await req({ user }).expect(401, 'Unauthorized')
+      res = await req({ user }).expect(401)
+      expect(res.body).toEqual({ errors: { username: any(String) } })
     })
 
     it('does not creat a token if the password is incorrect', async () => {
       const { _id, username, password, tokens } = fixtures.users[0]
       const user = { username, password: `wrong${password}` }
-      res = await req({ user }).expect(401, 'Unauthorized')
+      res = await req({ user }).expect(401)
+      expect(res.body).toEqual({ errors: { password: any(String) } })
 
       const userDoc = pojo(await User.findById(_id))
       expect(userDoc.tokens).toEqual(tokens)

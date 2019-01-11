@@ -45,8 +45,8 @@ router.post('/', authenticate, [
       if (!password) {
         throw new EkkiError({ password: 'Password required for large amounts' })
       }
-      const user = await User.findByCredentials(sender.username, password)
-      if (!user) throw new EkkiError({ password: 'Password is incorrect' })
+      const isCorrect = await sender.checkCredentials(password)
+      if (!isCorrect) throw new EkkiError({ password: 'Password is incorrect' })
     }
 
     // Check if amount is larger than the sender's balance

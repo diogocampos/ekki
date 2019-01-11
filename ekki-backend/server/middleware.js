@@ -43,8 +43,9 @@ const notFound = (exports.notFound = sendStatus(404))
 /**
  * A custom error constructor.
  */
-const EkkiError = (exports.EkkiError = function(errors) {
+const EkkiError = (exports.EkkiError = function(errors, status = 400) {
   this.errors = errors
+  this.status = status
 })
 
 /**
@@ -52,7 +53,7 @@ const EkkiError = (exports.EkkiError = function(errors) {
  */
 exports.handleValidationError = (err, req, res, next) => {
   if (err instanceof EkkiError) {
-    return res.status(400).json({ errors: err.errors })
+    return res.status(err.status).json({ errors: err.errors })
   }
   if (err.name === 'ValidationError') {
     const errors = {}
