@@ -64,6 +64,7 @@ TransferSchema.statics.isDuplicate = async function(sender, receiver, amount) {
   const Transfer = this
   const latest = await Transfer.getLatestFromSender(sender)
   return (
+    latest &&
     receiver.username === latest.receiver &&
     amount === latest.amountFromBalance + latest.amountFromCard &&
     Date.now() - latest.createdAt.getTime() < Transfer.GRACE_PERIOD
