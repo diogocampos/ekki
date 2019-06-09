@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "casual": "^1.5.19",
-    "expect": "^23.6.0",
+    "expect": "^24.8.0",
     "mocha": "^5.2.0",
     "supertest": "^3.3.0"
   },
